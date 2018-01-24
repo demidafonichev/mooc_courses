@@ -1,1 +1,1 @@
-# MOOCcources
+# mooc_couses

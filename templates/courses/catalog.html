@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <h1 class="my-4">Courses catalog</h1>
+        <div class="row">
+            {% for course in courses %}
+                <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+                    <div class="card h-100">
+                        <a href="{% url 'get_course' course_id=course.id %}">
+                            <img class="card-img-top" src="{{ course.cover.url }}" alt="">
+                        </a>
+                        <div class="card-body">
+                            <h4 class="card-title">{{ course.title }}</h4>
+                            <p class="card-text">{{ course.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div><!-- /.row -->
+        <a href="{% url 'create_course' %}">
+            <button class="btn btn-dark">Создать курс</button>
+        </a>
+    </div>
+{% endblock %}

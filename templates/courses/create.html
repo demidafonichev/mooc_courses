@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <h1 class="my-4">Create course</h1>
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input id="title" class="form-control">
+        </div>
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+            <label for="upload">Презентация</label>
+            <input id="upload" type="file" multiple/>
+        </div>
+        <img id="course-cover" class="img-fluid" src="" alt="">
+        <div class="row" id="images">
+        </div>
+        <button id="save" class="btn btn-dark" type="submit">Сохранить</button>
+    </div><!-- /.container -->
+
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                let cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = jQuery.trim(cookies[i]);
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        $.ajaxSetup({
+            contentType: "application/json; charset=utf-8",
+            beforeSend: function (xhr, settings) {
+                if (!this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                }
+            }
+        });
+
+        let baseUrl = 'http://127.0.0.1:8000/';
+        let course = {};
+        let slides = [];
+        let images = [];
+        $('#upload').change(event, function () {
+            slides = [];
+            images = [];
+            $('#images').empty();
+            let selectedFiles = event.target.files;
+
+            for (let i = 0; i < selectedFiles.length; ++i) {
+                slides.push({
+                    key: i,
+                    name: selectedFiles[i].name,
+                    raw: selectedFiles[i]
+                });
+            }
+
+            for (let i = 0; i < slides.length; ++i) {
+                let fileReader = new FileReader();
+                fileReader.onload = function () {
+                    slides[i].data = fileReader.result;
+                    check();
+                };
+                fileReader.readAsDataURL(slides[i].raw);
+            }
+
+            function check() {
+                let ready = true;
+                slides.forEach(function (e) {
+                    if (!e.data) ready = false;
+                })
+
+                if (ready) done();
+            }
+
+            function done() {
+                slides.sort(function (a, b) {
+                    if (a.key > b.key) return 1;
+                    if (a.key < b.key) return -1;
+                    return 0;
+                })
+
+                slides.forEach(function (e) {
+                    createImageDom(e.key, e.data);
+                })
+            }
+
+            function createImageDom(id, data) {
+                console.log(id);
+                let image_wrapper = $('<div>', {class: 'col-md-3 col-sm-6 mb-4'})
+                let image = $('<img>', {
+                    class: 'img-fluid',
+                    src: data,
+                    id: 'image' + id,
+                });
+                image.click(function () {
+                    $('#course-cover').attr('src', this.src);
+                });
+
+                image_wrapper.append(image);
+                $('#images').append(image_wrapper);
+
+                if (id === 0) {
+                    $('#course-cover').attr("src", data);
+                }
+            }
+        });
+
+        $('#save').click(function () {
+            course.title = $('#title').val();
+            course.description = $('#description').val();
+            course.slides = slides;
+
+            let formData = new FormData();
+            formData.append('course', JSON.stringify(course));
+            $.ajax({
+                url: baseUrl + 'courses/save_course',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    document.location.href = baseUrl + 'courses';
+                },
+                error: function (data) {
+                    console.log('error');
+                }
+            });
+        });
+
+        $('img').click(function () {
+            $('#course-cover').attr('src', event.target.src);
+        });
+    </script>
+
+{% endblock %}

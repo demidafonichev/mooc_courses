@@ -46,6 +46,7 @@ body {
     margin: auto;
     display: block;
     width: 80%;
+    border-radius: 0rem;
 }
 
 .slideshow-image {
@@ -187,4 +188,21 @@ span {
 .pin {
     left: -5px;
     top: -8px;
+}
+
+.comment-list {
+    padding: 0rem 1rem 0rem 1rem;
+    background-color: #ffffff !important;
+}
+
+.commenter-name {
+    font-size: 20px;
+}
+
+.comment {
+    font-size: 14px;
+}
+
+.write-comment-block .btn {
+    margin-top: 0px;
 }

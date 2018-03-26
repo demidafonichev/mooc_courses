@@ -82,45 +82,14 @@
                             type="audio/mpeg">
                 </audio>
             </div>
-            <div class="comment-list">
-                <div class="comment-block">
-                    <div class="media mb-0">
-                        <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
-                        <div class="media-body">
-                            <div class="mt-0 commenter-name">Commenter Name</div>
-                            <div class="comment">
-                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
-                                ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
-                                Fusce condimentum nunc ac
-                                nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <br />
-                <div class="comment-block">
-                    <div class="media mb-0">
-                        <img class="d-flex mr-3 rounded-circle" src="http://placehold.it/50x50" alt="">
-                        <div class="media-body">
-                            <div class="mt-0 commenter-name">Commenter Name</div>
-                            <div class="comment">
-                                Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque
-                                ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis.
-                                Fusce condimentum nunc ac
-                                nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div id="comment-list" class="comment-list">
             </div>
             <div class="write-comment-block">
                 <div class="card-body">
-                    <form>
-                        <div class="form-group">
-                            <textarea class="form-control" rows="2"></textarea>
-                        </div>
-                        <button class="btn btn-dark" id="send-comment" type="submit">Submit</button>
-                    </form>
+                    <div class="form-group">
+                        <textarea class="form-control" id="comment-text" rows="2"></textarea>
+                    </div>
+                    <button class="btn btn-dark" id="send-comment">Submit</button>
                 </div>
             </div>
         </div>
@@ -133,20 +102,123 @@
     </div>
 
     <script>
-        let currentSlideshowImageId = 0;
+
+        {% autoescape off %}
+            let slideList = [];
+            let comments;
+            {% for slide in slides %}
+                comments = [];
+                {% for comment in slide.comments %}
+                    comments.push({
+                        id: {{ comment.id }},
+                        slideID: {{ comment.slide_id }},
+                        authorID: {{ comment.author_id }},
+                        authorName: '{{ comment.author_name }}',
+                        text: '{{ comment.text }}'
+                    })
+                {% endfor %}
+                slideList.push({
+                    id: {{ slide.id }},
+                    number: {{ slide.number }},
+                    image: '{{ slide.image.url }}',
+                    comments: comments
+                });
+            {% endfor %}
+        {% endautoescape %}
+
+        let currentSlideshowImageId;
+        let currentSlideshowImageNumber;
 
         $('#play-course').click(function () {
+            console.log(slideList);
             $('#slideshow-modal').modal();
             $('#slideshow').attr('src', $('#image0').attr('src'));
+
+            currentSlideshowImageNumber = 0;
+            currentSlideshowImageId = slideList[0].id;
+
+            addCommentList(currentSlideshowImageId);
         });
 
         $('img[id^=image]').click(function () {
-            currentSlideshowImageId = parseInt(this.id.substr(5));
-            /* deleting 'image' from id */
+            {# deleting 'image' from id #}
+            currentSlideshowImageNumber = parseInt(this.id.substr(5));
 
             $('#slide-modal').modal();
             $('#slide').attr('src', this.src);
         });
+
+        $('#send-comment').click(function () {
+            let commentField = $('#comment-text')
+            let commentText = commentField.val();
+            $.ajax({
+                url: baseUrl + 'courses/save_slide_comment',
+                type: 'POST',
+                dataType: "json",
+                data: JSON.stringify({'text': commentText, 'slide_id': currentSlideshowImageId}),
+                success: function (commentData) {
+                    let comment = {
+                        id: commentData.id,
+                        slideID: commentData.slide_id,
+                        authorID: commentData.author_id,
+                        authorName: commentData.author_name,
+                        text: commentData.text
+                    }
+
+                    $.grep(slideList, function (e) {
+                        return e.id === currentSlideshowImageId;
+                    })[0].comments.push(comment);
+
+                    $('#comment-list').append($('<br>'));
+                    addCommentToList(comment.slideID, comment);
+
+                    commentField.val('');
+                },
+                error: function (data) {
+                    console.log('error');
+                }
+            });
+        });
+
+        function addCommentList(slideID) {
+            console.log(slideID);
+            let slide = $.grep(slideList, function (e) {
+                return e.id === slideID
+            })[0]
+
+            let commentList = $('#comment-list');
+            commentList.empty();
+            for (let i = 0; i < slide.comments.length; ++i) {
+                if (i !== 0) commentList.append('<br>');
+                addCommentToList(slideID, slide.comments[i]);
+            }
+        }
+
+        function addCommentToList(slideID, comment) {
+            let commentList = $('#comment-list');
+            let commentBlockWrapper = $('<div>', {class: "comment-block media mb-0"})
+            let authorImage = $('<img>', {
+                class: "d-flex mr-3 rounded-circle",
+                src: "http://placehold.it/50x50"
+            })
+            let commentWrapper = $('<div>', {class: "media-body"})
+            let commentAuthor = $('<div>', {
+                class: "mt-0 commenter-name",
+                text: comment.authorID === -1 ? "Anonymous" : comment.authorName
+            })
+            let commentText = $('<div>', {
+                class: "comment",
+                text: comment.text
+            })
+
+            commentWrapper.append(commentAuthor);
+            commentWrapper.append(commentText);
+
+            commentBlockWrapper.append(authorImage);
+            commentBlockWrapper.append(commentWrapper);
+
+            commentList.append(commentBlockWrapper);
+        }
 
         let audioPlayer = document.querySelector('.green-audio-player');
         let playPause = audioPlayer.querySelector('#playPause');
@@ -241,10 +313,13 @@
 
             /* TODO: add changing slides here */
             let slidesTime = [5, 10, 15, 20, 25, 30, 35];
-            for (let i = currentSlideshowImageId; i < slidesTime.length; ++i) {
+            for (let i = currentSlideshowImageNumber; i < slidesTime.length; ++i) {
                 if (player.currentTime > slidesTime[i]) {
                     currentSlideshowImageId++;
-                    $('#slideshow').attr('src', $('#image' + currentSlideshowImageId).attr('src'));
+                    currentSlideshowImageNumber++;
+
+                    $('#slideshow').attr('src', $('#image' + currentSlideshowImageNumber).attr('src'));
+                    addCommentList(currentSlideshowImageId);
                 } else break;
             }
         }

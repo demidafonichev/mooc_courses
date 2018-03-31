@@ -38,8 +38,18 @@
 
     <div id="slideshow-modal" class="modal-centered modal">
         <div class="modal-content">
-            <img src="" class="slideshow-image" id="slideshow">
-            <div class="audio green-audio-player">
+            <div id="image-box">
+                <img src="" class="slideshow-image" id="slideshow"/>
+                <a class="carousel-control-prev" id="prev-slide">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </a>
+                <a class="carousel-control-next" id="next-slide">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </a>
+            </div>
+            <div id="audio-player" class="audio green-audio-player">
                 <div class="loading">
                     <div class="spinner"></div>
                 </div>
@@ -82,35 +92,22 @@
                             type="audio/mpeg">
                 </audio>
             </div>
-            <div id="comment-list" class="comment-list">
-            </div>
-            <div class="write-comment-block">
-                <div class="card-body">
-                    <div class="form-group">
-                        <textarea class="form-control" id="comment-text" rows="2"></textarea>
+            <div id="comment-box">
+                <div id="comment-list" class="comment-list">
+                </div>
+                <div class="write-comment-block">
+                    <div class="card-body">
+                        <div class="form-group">
+                            <textarea class="form-control" id="comment-text" rows="2"></textarea>
+                        </div>
+                        <button class="btn btn-dark" id="send-comment">Submit</button>
                     </div>
-                    <button class="btn btn-dark" id="send-comment">Submit</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="slide-modal" class="modal-centered modal">
-        <div class="modal-content">
-            <img src="" class="slideshow-image" id="slide">
-            <a class="carousel-control-prev" id="prev-slide">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="sr-only">Previous</span>
-            </a>
-            <a class="carousel-control-next" id="next-slide">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="sr-only">Next</span>
-            </a>
-        </div>
-    </div>
-
     <script>
-
         {% autoescape off %}
             let slideList = [];
             let comments;
@@ -138,21 +135,23 @@
         let currentSlideshowImageNumber;
 
         $('#play-course').click(function () {
-            console.log(slideList);
-            $('#slideshow-modal').modal();
-            $('#slideshow').attr('src', $('#image0').attr('src'));
-
             currentSlideshowImageNumber = 0;
             currentSlideshowImageId = slideList[0].id;
+            updateCommentList(currentSlideshowImageNumber);
 
-            addCommentList(currentSlideshowImageId);
+            $('#prev-slide').hide();
+            $('#next-slide').hide();
+            $('#audio-player').show();
+            $('#comment-box').css('padding-top', '0');
+            $('#slideshow').attr('src', $('#image0').attr('src'));
+
+            $('#slideshow-modal').modal();
         });
 
-        function changeSlideshowControllers() {
+        function updateSlideshowControllers() {
             let prevSlide = $('#prev-slide');
             let nextSlide = $('#next-slide');
 
-            console.log(currentSlideshowImageNumber);
             if (currentSlideshowImageNumber === 0) {
                 prevSlide.hide();
                 nextSlide.show();
@@ -165,34 +164,46 @@
             }
         }
 
-        function changeSlideshowImage() {
+        function updateSlideshowImage() {
             let slide = $.grep(slideList, function (e) {
                 return e.number === currentSlideshowImageNumber;
             })[0];
 
-            $('#slide').attr('src', slide.image);
+            $('#slideshow').attr('src', slide.image);
+        }
 
-            changeSlideshowControllers();
+        function updateSlideshow() {
+            updateCommentList();
+            updateSlideshowImage();
+            updateSlideshowControllers();
         }
 
         $('img[id^=image]').click(function () {
             {# deleting 'image' from id #}
             currentSlideshowImageNumber = parseInt(this.id.substr(5));
+            let slide = $.grep(slideList, function (e) {
+                return e.number === currentSlideshowImageNumber;
+            })[0];
+            updateCommentList();
+            updateSlideshowControllers();
 
-            $('#slide-modal').modal();
-            $('#slide').attr('src', this.src);
+            $('#prev-slide').show();
+            $('#next-slide').show();
+            $('#audio-player').hide();
+            $('#comment-box').css('padding-top', '15px');
+            $('#slideshow').attr('src', slide.image);
 
-            changeSlideshowControllers();
+            $('#slideshow-modal').modal();
         });
 
         $('#prev-slide').click(function () {
             currentSlideshowImageNumber--;
-            changeSlideshowImage();
+            updateSlideshow();
         });
 
         $('#next-slide').click(function () {
             currentSlideshowImageNumber++;
-            changeSlideshowImage();
+            updateSlideshow();
         });
 
         $('#send-comment').click(function () {
@@ -217,7 +228,7 @@
                     })[0].comments.push(comment);
 
                     $('#comment-list').append($('<br>'));
-                    addCommentToList(comment.slideID, comment);
+                    addCommentToList(comment);
 
                     commentField.val('');
                 },
@@ -227,21 +238,21 @@
             });
         });
 
-        function addCommentList(slideID) {
-            console.log(slideID);
+        function updateCommentList() {
             let slide = $.grep(slideList, function (e) {
-                return e.id === slideID
-            })[0]
-
+                return e.number === currentSlideshowImageNumber;
+            })[0];
             let commentList = $('#comment-list');
+
             commentList.empty();
+
             for (let i = 0; i < slide.comments.length; ++i) {
                 if (i !== 0) commentList.append('<br>');
-                addCommentToList(slideID, slide.comments[i]);
+                addCommentToList(slide.comments[i]);
             }
         }
 
-        function addCommentToList(slideID, comment) {
+        function addCommentToList(comment) {
             let commentList = $('#comment-list');
             let commentBlockWrapper = $('<div>', {class: "comment-block media mb-0"})
             let authorImage = $('<img>', {
@@ -366,7 +377,7 @@
                     currentSlideshowImageNumber++;
 
                     $('#slideshow').attr('src', $('#image' + currentSlideshowImageNumber).attr('src'));
-                    addCommentList(currentSlideshowImageId);
+                    updateCommentList();
                 } else break;
             }
         }
@@ -447,6 +458,6 @@
             volumeControls.style.bottom = '52px';
             volumeControls.style.left = '-3px';
         }
-
     </script>
+
 {% endblock %}

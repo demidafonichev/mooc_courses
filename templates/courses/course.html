@@ -98,6 +98,14 @@
     <div id="slide-modal" class="modal-centered modal">
         <div class="modal-content">
             <img src="" class="slideshow-image" id="slide">
+            <a class="carousel-control-prev" id="prev-slide">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" id="next-slide">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
         </div>
     </div>
 
@@ -140,12 +148,51 @@
             addCommentList(currentSlideshowImageId);
         });
 
+        function changeSlideshowControllers() {
+            let prevSlide = $('#prev-slide');
+            let nextSlide = $('#next-slide');
+
+            console.log(currentSlideshowImageNumber);
+            if (currentSlideshowImageNumber === 0) {
+                prevSlide.hide();
+                nextSlide.show();
+            } else if (currentSlideshowImageNumber === slideList.length - 1) {
+                prevSlide.show();
+                nextSlide.hide();
+            } else {
+                prevSlide.show();
+                nextSlide.show();
+            }
+        }
+
+        function changeSlideshowImage() {
+            let slide = $.grep(slideList, function (e) {
+                return e.number === currentSlideshowImageNumber;
+            })[0];
+
+            $('#slide').attr('src', slide.image);
+
+            changeSlideshowControllers();
+        }
+
         $('img[id^=image]').click(function () {
             {# deleting 'image' from id #}
             currentSlideshowImageNumber = parseInt(this.id.substr(5));
 
             $('#slide-modal').modal();
             $('#slide').attr('src', this.src);
+
+            changeSlideshowControllers();
+        });
+
+        $('#prev-slide').click(function () {
+            currentSlideshowImageNumber--;
+            changeSlideshowImage();
+        });
+
+        $('#next-slide').click(function () {
+            currentSlideshowImageNumber++;
+            changeSlideshowImage();
         });
 
         $('#send-comment').click(function () {
@@ -401,7 +448,5 @@
             volumeControls.style.left = '-3px';
         }
 
-
     </script>
-
 {% endblock %}

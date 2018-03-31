@@ -37,16 +37,17 @@ body {
 /* Modals styles */
 
 .modal {
-    padding-top: 55px; /* Location of the box */
     background-color: rgb(0, 0, 0); /* Fallback color */
     background-color: rgba(0, 0, 0, 0.7); /* Black w/ opacity */
+    vertical-align: middle;
 }
 
 .modal-content {
+    top: 55px;
     margin: auto;
     display: block;
     width: 80%;
-    border-radius: 0rem;
+    border-radius: 0;
 }
 
 .slideshow-image {

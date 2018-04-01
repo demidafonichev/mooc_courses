@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
     <div class="container">
         <h1 class="my-4">Create course</h1>
@@ -11,11 +11,11 @@
             <textarea id="description" class="form-control" rows="4"></textarea>
         </div>
 
-        <div class="form-group">
+        <div id="presentation-input-group" class="form-group">
             <label for="upload">Презентация</label>
             <input id="presentation-input" type="file" multiple/>
         </div>
-        <div class="form-group">
+        <div id="audio-input-group" class="form-group">
             <label for="upload">Аудио-файл</label>
             <input id="audio-input" type="file"/>
         </div>
@@ -75,11 +75,11 @@
     <script>
         function getCookie(name) {
             let cookieValue = null;
-            if (document.cookie && document.cookie !== '') {
-                let cookies = document.cookie.split(';');
+            if (document.cookie && document.cookie !== "") {
+                let cookies = document.cookie.split(";");
                 for (let i = 0; i < cookies.length; i++) {
                     let cookie = jQuery.trim(cookies[i]);
-                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    if (cookie.substring(0, name.length + 1) === (name + "=")) {
                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                         break;
                     }
@@ -92,26 +92,27 @@
             contentType: "application/json; charset=utf-8",
             beforeSend: function (xhr, settings) {
                 if (!this.crossDomain) {
-                    xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                    xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
                 }
             }
         });
 
         $(document).ready(function () {
-            $('#cover-label').hide();
-            $('#slides-label').hide();
-            $('#audio-player').hide();
+            $("#cover-label").hide();
+            $("#slides-label").hide();
+            $("#audio-player").hide();
         });
 
         let course = {};
         let slides = [];
         let images = [];
-        $('#presentation-input').change(function () {
+        $("#presentation-input").change(function () {
+            $("#presentation-input-group").hide();
             slides = [];
             images = [];
-            $('#images').empty();
-            $('#cover-label').show();
-            $('#slides-label').show();
+            $("#images").empty();
+            $("#cover-label").show();
+            $("#slides-label").show();
             let selectedFiles = this.files;
 
             for (let i = 0; i < selectedFiles.length; ++i) {
@@ -148,115 +149,130 @@
                 })
 
                 slides.forEach(function (e) {
-                    createImageDom(e.key, e.data);
+                    createImageDom(e);
                 })
             }
 
-            function createImageDom(id, data) {
-                let image_wrapper = $('<div>', {class: 'col-md-3 col-sm-6 mb-4'})
-                let image = $('<img>', {
-                    class: 'img-fluid',
-                    src: data,
-                    id: 'image' + id,
+            function createImageDom(slide) {
+                console.log(slide);
+                let cardWrapper = $("<div>", {
+                    class: "col-lg-3 col-md-4 col-sm-6 portfolio-item"
                 });
+                let imageWrapper = $("<div>", {
+                    class: "card h-100"
+                });
+                let image = $("<img>", {
+                    class: "card-img-top",
+                    src: slide.data,
+                    id: "image" + slide.id,
+                });
+                let cardBody = $("<div>", {
+                    class: "slide-name",
+                    text: slide.name
+                });
+
                 image.click(function () {
-                    $('#course-cover').attr('src', this.src);
+                    $("#course-cover").attr("src", this.src);
                 });
 
-                image_wrapper.append(image);
-                $('#images').append(image_wrapper);
+                imageWrapper.append(image);
+                imageWrapper.append(cardBody);
 
-                if (id === 0) {
-                    $('#course-cover').attr("src", data);
+                cardWrapper.append(imageWrapper);
+                $("#images").append(cardWrapper);
+
+                if (slide.number === 0) {
+                    $("#course-cover").attr("src", slide.data);
                 }
             }
         });
 
-        $('#audio-input').change(function() {
+        $("#audio-input").change(function () {
+            $("#audio-input-group").hide();
+
             let file = this.files[0];
             console.log(file);
 
-            $('#audio-player').show();
-            $('#audio-source').attr('src', URL.createObjectURL(this.files[0]));
-            console.log($('#audio-source').attr('src'));
+            $("#audio-player").show();
+            $("#audio-source").attr("src", URL.createObjectURL(this.files[0]));
         });
 
-        $('#save').click(function () {
-            course.title = $('#title').val();
-            course.description = $('#description').val();
+        $("#save").click(function () {
+            course.title = $("#title").val();
+            course.description = $("#description").val();
             course.slides = slides;
 
             let formData = new FormData();
-            formData.append('course', JSON.stringify(course));
+            formData.append("course", JSON.stringify(course));
             $.ajax({
-                url: baseUrl + 'courses/save_course',
-                type: 'POST',
+                url: baseUrl + "courses/save_course",
+                type: "POST",
                 data: formData,
                 processData: false,
                 contentType: false,
                 success: function (data) {
-                    document.location.href = baseUrl + 'courses';
+                    document.location.href = baseUrl + "courses";
                 },
                 error: function (data) {
-                    console.log('error');
+                    console.log("error");
                 }
             });
         });
 
-        let audioPlayer = document.querySelector('.green-audio-player');
-        let playPause = audioPlayer.querySelector('#playPause');
-        let playpauseBtn = audioPlayer.querySelector('.play-pause-btn');
-        let loading = audioPlayer.querySelector('.loading');
-        let progress = audioPlayer.querySelector('.progress');
-        let sliders = audioPlayer.querySelectorAll('.slider');
-        let volumeBtn = audioPlayer.querySelector('.volume-btn');
-        let volumeControls = audioPlayer.querySelector('.volume-controls');
-        let volumeProgress = volumeControls.querySelector('.slider .progress');
-        let player = audioPlayer.querySelector('audio');
-        let currentTime = audioPlayer.querySelector('.current-time');
-        let totalTime = audioPlayer.querySelector('.total-time');
-        let speaker = audioPlayer.querySelector('#speaker');
+        let audioPlayer = document.querySelector(".green-audio-player");
+        let playPause = audioPlayer.querySelector("#playPause");
+        let playpauseBtn = audioPlayer.querySelector(".play-pause-btn");
+        let loading = audioPlayer.querySelector(".loading");
+        let progress = audioPlayer.querySelector(".progress");
+        let sliders = audioPlayer.querySelectorAll(".slider");
+        let volumeBtn = audioPlayer.querySelector(".volume-btn");
+        let volumeControls = audioPlayer.querySelector(".volume-controls");
+        let volumeProgress = volumeControls.querySelector(".slider .progress");
+        let player = audioPlayer.querySelector("audio");
+        let currentTime = audioPlayer.querySelector(".current-time");
+        let totalTime = audioPlayer.querySelector(".total-time");
+        let speaker = audioPlayer.querySelector("#speaker");
 
-        let draggableClasses = ['pin'];
+        let draggableClasses = ["pin"];
         let currentlyDragged = null;
 
-        window.addEventListener('mousedown', function (event) {
+        window.addEventListener("mousedown", function (event) {
 
             if (!isDraggable(event.target)) return false;
 
             currentlyDragged = event.target;
             let handleMethod = currentlyDragged.dataset.method;
 
-            this.addEventListener('mousemove', window[handleMethod], false);
+            this.addEventListener("mousemove", window[handleMethod], false);
 
-            window.addEventListener('mouseup', () => {
+            window.addEventListener("mouseup", () => {
                 currentlyDragged = false;
-                window.removeEventListener('mousemove', window[handleMethod], false);
+                window.removeEventListener("mousemove", window[handleMethod], false);
             }, false);
         });
 
-        playpauseBtn.addEventListener('click', togglePlay);
-        player.addEventListener('timeupdate', updateProgress);
-        player.addEventListener('volumechange', updateVolume);
-        player.addEventListener('loadedmetadata', () => {
+        playpauseBtn.addEventListener("click", togglePlay);
+        player.addEventListener("timeupdate", updateProgress);
+        player.addEventListener("volumechange", updateVolume);
+        player.addEventListener("loadedmetadata", () => {
             totalTime.textContent = formatTime(player.duration);
         });
-        player.addEventListener('canplay', makePlay);
-        player.addEventListener('ended', function () {
+        player.addEventListener("canplay", makePlay);
+        player.addEventListener("ended", function () {
             playPause.attributes.d.value = "M18 12L0 24V0";
             player.currentTime = 0;
         });
 
-        volumeBtn.addEventListener('click', () => {
-            volumeBtn.classList.toggle('open');
-            volumeControls.classList.toggle('hidden');
+        volumeBtn.addEventListener("click", () => {
+            volumeBtn.classList.toggle("open");
+            volumeControls.classList.toggle("hidden");
         })
 
-        window.addEventListener('resize', directionAware);
+        window.addEventListener("resize", directionAware);
 
         sliders.forEach(slider => {
-            let pin = slider.querySelector('.pin');
-            slider.addEventListener('click', window[pin.dataset.method]);
+            let pin = slider.querySelector(".pin");
+            slider.addEventListener("click", window[pin.dataset.method]);
         });
 
         directionAware();
@@ -275,7 +291,7 @@
             let rangeBox = getRangeBox(event);
             let rect = rangeBox.getBoundingClientRect();
             let direction = rangeBox.dataset.direction;
-            if (direction === 'horizontal') {
+            if (direction === "horizontal") {
                 let min = rangeBox.offsetLeft;
                 let max = min + rangeBox.offsetWidth;
                 if (event.clientX < min || event.clientX > max) return false;
@@ -290,7 +306,7 @@
         function updateProgress() {
             let current = player.currentTime;
             let percent = (current / player.duration) * 100;
-            progress.style.width = percent + '%';
+            progress.style.width = percent + "%";
 
             currentTime.textContent = formatTime(current);
 
@@ -301,30 +317,30 @@
                     currentSlideshowImageId++;
                     currentSlideshowImageNumber++;
 
-                    $('#slideshow').attr('src', $('#image' + currentSlideshowImageNumber).attr('src'));
+                    $("#slideshow").attr("src", $("#image" + currentSlideshowImageNumber).attr("src"));
                     addCommentList(currentSlideshowImageId);
                 } else break;
             }
         }
 
         function updateVolume() {
-            volumeProgress.style.height = player.volume * 100 + '%';
+            volumeProgress.style.height = player.volume * 100 + "%";
             if (player.volume >= 0.5) {
-                speaker.attributes.d.value = 'M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z';
+                speaker.attributes.d.value = "M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z";
             } else if (player.volume < 0.5 && player.volume > 0.05) {
-                speaker.attributes.d.value = 'M0 7.667v8h5.333L12 22.333V1L5.333 7.667M17.333 11.373C17.333 9.013 16 6.987 14 6v10.707c2-.947 3.333-2.987 3.333-5.334z';
+                speaker.attributes.d.value = "M0 7.667v8h5.333L12 22.333V1L5.333 7.667M17.333 11.373C17.333 9.013 16 6.987 14 6v10.707c2-.947 3.333-2.987 3.333-5.334z";
             } else if (player.volume <= 0.05) {
-                speaker.attributes.d.value = 'M0 7.667v8h5.333L12 22.333V1L5.333 7.667';
+                speaker.attributes.d.value = "M0 7.667v8h5.333L12 22.333V1L5.333 7.667";
             }
         }
 
         function getRangeBox(event) {
             let rangeBox = event.target;
             let el = currentlyDragged;
-            if (event.type === 'click' && isDraggable(event.target)) {
+            if (event.type === "click" && isDraggable(event.target)) {
                 rangeBox = event.target.parentElement.parentElement;
             }
-            if (event.type === 'mousemove') {
+            if (event.type === "mousemove") {
                 rangeBox = el.parentElement.parentElement;
             }
             return rangeBox;
@@ -334,11 +350,11 @@
             let slider = getRangeBox(event);
             let rect = slider.getBoundingClientRect();
             let K = 0;
-            if (slider.dataset.direction === 'horizontal') {
+            if (slider.dataset.direction === "horizontal") {
                 let offsetX = event.clientX - slider.offsetLeft;
                 let width = slider.clientWidth;
                 K = offsetX / width;
-            } else if (slider.dataset.direction === 'vertical') {
+            } else if (slider.dataset.direction === "vertical") {
                 let height = slider.clientHeight;
                 let offsetY = event.clientY - rect.top;
                 K = 1 - offsetY / height;
@@ -361,7 +377,7 @@
         function formatTime(time) {
             let min = Math.floor(time / 60);
             let sec = Math.floor(time % 60);
-            return min + ':' + ((sec < 10) ? ('0' + sec) : sec);
+            return min + ":" + ((sec < 10) ? ("0" + sec) : sec);
         }
 
         function togglePlay() {
@@ -375,13 +391,13 @@
         }
 
         function makePlay() {
-            playpauseBtn.style.display = 'block';
-            loading.style.display = 'none';
+            playpauseBtn.style.display = "block";
+            loading.style.display = "none";
         }
 
         function directionAware() {
-            volumeControls.style.bottom = '52px';
-            volumeControls.style.left = '-3px';
+            volumeControls.style.bottom = "52px";
+            volumeControls.style.left = "-3px";
         }
     </script>
 

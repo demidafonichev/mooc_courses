@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% block content %}
     <div class="container">
         <h1 class="my-4">{{ course.title }}</h1>
@@ -30,7 +30,7 @@
         </div>
 
         <div class="modal-footer">
-            <a href="{% url 'delete_course' course_id=course.id %}">
+            <a href="{% url "delete_course" course_id=course.id %}">
                 <button id="delete" class="btn btn-outline-dark" type="submit">Удалить</button>
             </a>
         </div>
@@ -118,14 +118,14 @@
                         id: {{ comment.id }},
                         slideID: {{ comment.slide_id }},
                         authorID: {{ comment.author_id }},
-                        authorName: '{{ comment.author_name }}',
-                        text: '{{ comment.text }}'
+                        authorName: "{{ comment.author_name }}",
+                        text: "{{ comment.text }}"
                     })
                 {% endfor %}
                 slideList.push({
                     id: {{ slide.id }},
                     number: {{ slide.number }},
-                    image: '{{ slide.image.url }}',
+                    image: "{{ slide.image.url }}",
                     comments: comments
                 });
             {% endfor %}
@@ -134,23 +134,23 @@
         let currentSlideshowImageId;
         let currentSlideshowImageNumber;
 
-        $('#play-course').click(function () {
+        $("#play-course").click(function () {
             currentSlideshowImageNumber = 0;
             currentSlideshowImageId = slideList[0].id;
             updateCommentList(currentSlideshowImageNumber);
 
-            $('#prev-slide').hide();
-            $('#next-slide').hide();
-            $('#audio-player').show();
-            $('#comment-box').css('padding-top', '0');
-            $('#slideshow').attr('src', $('#image0').attr('src'));
+            $("#prev-slide").hide();
+            $("#next-slide").hide();
+            $("#audio-player").show();
+            $("#comment-box").css("padding-top", "0");
+            $("#slideshow").attr("src", $("#image0").attr("src"));
 
-            $('#slideshow-modal').modal();
+            $("#slideshow-modal").modal();
         });
 
         function updateSlideshowControllers() {
-            let prevSlide = $('#prev-slide');
-            let nextSlide = $('#next-slide');
+            let prevSlide = $("#prev-slide");
+            let nextSlide = $("#next-slide");
 
             if (currentSlideshowImageNumber === 0) {
                 prevSlide.hide();
@@ -169,7 +169,7 @@
                 return e.number === currentSlideshowImageNumber;
             })[0];
 
-            $('#slideshow').attr('src', slide.image);
+            $("#slideshow").attr("src", slide.image);
         }
 
         function updateSlideshow() {
@@ -178,8 +178,8 @@
             updateSlideshowControllers();
         }
 
-        $('img[id^=image]').click(function () {
-            {# deleting 'image' from id #}
+        $("img[id^=image]").click(function () {
+            {# deleting "image" from id #}
             currentSlideshowImageNumber = parseInt(this.id.substr(5));
             let slide = $.grep(slideList, function (e) {
                 return e.number === currentSlideshowImageNumber;
@@ -187,33 +187,33 @@
             updateCommentList();
             updateSlideshowControllers();
 
-            $('#prev-slide').show();
-            $('#next-slide').show();
-            $('#audio-player').hide();
-            $('#comment-box').css('padding-top', '15px');
-            $('#slideshow').attr('src', slide.image);
+            $("#prev-slide").show();
+            $("#next-slide").show();
+            $("#audio-player").hide();
+            $("#comment-box").css("padding-top", "15px");
+            $("#slideshow").attr("src", slide.image);
 
-            $('#slideshow-modal').modal();
+            $("#slideshow-modal").modal();
         });
 
-        $('#prev-slide').click(function () {
+        $("#prev-slide").click(function () {
             currentSlideshowImageNumber--;
             updateSlideshow();
         });
 
-        $('#next-slide').click(function () {
+        $("#next-slide").click(function () {
             currentSlideshowImageNumber++;
             updateSlideshow();
         });
 
-        $('#send-comment').click(function () {
-            let commentField = $('#comment-text')
+        $("#send-comment").click(function () {
+            let commentField = $("#comment-text")
             let commentText = commentField.val();
             $.ajax({
-                url: baseUrl + 'courses/save_slide_comment',
-                type: 'POST',
+                url: baseUrl + "courses/save_slide_comment",
+                type: "POST",
                 dataType: "json",
-                data: JSON.stringify({'text': commentText, 'slide_id': currentSlideshowImageId}),
+                data: JSON.stringify({"text": commentText, "slide_id": currentSlideshowImageId}),
                 success: function (commentData) {
                     let comment = {
                         id: commentData.id,
@@ -227,13 +227,13 @@
                         return e.id === currentSlideshowImageId;
                     })[0].comments.push(comment);
 
-                    $('#comment-list').append($('<br>'));
+                    $("#comment-list").append($("<br>"));
                     addCommentToList(comment);
 
-                    commentField.val('');
+                    commentField.val("");
                 },
                 error: function (data) {
-                    console.log('error');
+                    console.log("error");
                 }
             });
         });
@@ -242,29 +242,29 @@
             let slide = $.grep(slideList, function (e) {
                 return e.number === currentSlideshowImageNumber;
             })[0];
-            let commentList = $('#comment-list');
+            let commentList = $("#comment-list");
 
             commentList.empty();
 
             for (let i = 0; i < slide.comments.length; ++i) {
-                if (i !== 0) commentList.append('<br>');
+                if (i !== 0) commentList.append("<br>");
                 addCommentToList(slide.comments[i]);
             }
         }
 
         function addCommentToList(comment) {
-            let commentList = $('#comment-list');
-            let commentBlockWrapper = $('<div>', {class: "comment-block media mb-0"})
-            let authorImage = $('<img>', {
+            let commentList = $("#comment-list");
+            let commentBlockWrapper = $("<div>", {class: "comment-block media mb-0"})
+            let authorImage = $("<img>", {
                 class: "d-flex mr-3 rounded-circle",
                 src: "http://placehold.it/50x50"
             })
-            let commentWrapper = $('<div>', {class: "media-body"})
-            let commentAuthor = $('<div>', {
+            let commentWrapper = $("<div>", {class: "media-body"})
+            let commentAuthor = $("<div>", {
                 class: "mt-0 commenter-name",
                 text: comment.authorID === -1 ? "Anonymous" : comment.authorName
             })
-            let commentText = $('<div>', {
+            let commentText = $("<div>", {
                 class: "comment",
                 text: comment.text
             })
@@ -278,60 +278,60 @@
             commentList.append(commentBlockWrapper);
         }
 
-        let audioPlayer = document.querySelector('.green-audio-player');
-        let playPause = audioPlayer.querySelector('#playPause');
-        let playpauseBtn = audioPlayer.querySelector('.play-pause-btn');
-        let loading = audioPlayer.querySelector('.loading');
-        let progress = audioPlayer.querySelector('.progress');
-        let sliders = audioPlayer.querySelectorAll('.slider');
-        let volumeBtn = audioPlayer.querySelector('.volume-btn');
-        let volumeControls = audioPlayer.querySelector('.volume-controls');
-        let volumeProgress = volumeControls.querySelector('.slider .progress');
-        let player = audioPlayer.querySelector('audio');
-        let currentTime = audioPlayer.querySelector('.current-time');
-        let totalTime = audioPlayer.querySelector('.total-time');
-        let speaker = audioPlayer.querySelector('#speaker');
+        let audioPlayer = document.querySelector(".green-audio-player");
+        let playPause = audioPlayer.querySelector("#playPause");
+        let playpauseBtn = audioPlayer.querySelector(".play-pause-btn");
+        let loading = audioPlayer.querySelector(".loading");
+        let progress = audioPlayer.querySelector(".progress");
+        let sliders = audioPlayer.querySelectorAll(".slider");
+        let volumeBtn = audioPlayer.querySelector(".volume-btn");
+        let volumeControls = audioPlayer.querySelector(".volume-controls");
+        let volumeProgress = volumeControls.querySelector(".slider .progress");
+        let player = audioPlayer.querySelector("audio");
+        let currentTime = audioPlayer.querySelector(".current-time");
+        let totalTime = audioPlayer.querySelector(".total-time");
+        let speaker = audioPlayer.querySelector("#speaker");
 
-        let draggableClasses = ['pin'];
+        let draggableClasses = ["pin"];
         let currentlyDragged = null;
 
-        window.addEventListener('mousedown', function (event) {
+        window.addEventListener("mousedown", function (event) {
 
             if (!isDraggable(event.target)) return false;
 
             currentlyDragged = event.target;
             let handleMethod = currentlyDragged.dataset.method;
 
-            this.addEventListener('mousemove', window[handleMethod], false);
+            this.addEventListener("mousemove", window[handleMethod], false);
 
-            window.addEventListener('mouseup', () => {
+            window.addEventListener("mouseup", () => {
                 currentlyDragged = false;
-                window.removeEventListener('mousemove', window[handleMethod], false);
+                window.removeEventListener("mousemove", window[handleMethod], false);
             }, false);
         });
 
-        playpauseBtn.addEventListener('click', togglePlay);
-        player.addEventListener('timeupdate', updateProgress);
-        player.addEventListener('volumechange', updateVolume);
-        player.addEventListener('loadedmetadata', () => {
+        playpauseBtn.addEventListener("click", togglePlay);
+        player.addEventListener("timeupdate", updateProgress);
+        player.addEventListener("volumechange", updateVolume);
+        player.addEventListener("loadedmetadata", () => {
             totalTime.textContent = formatTime(player.duration);
         });
-        player.addEventListener('canplay', makePlay);
-        player.addEventListener('ended', function () {
+        player.addEventListener("canplay", makePlay);
+        player.addEventListener("ended", function () {
             playPause.attributes.d.value = "M18 12L0 24V0";
             player.currentTime = 0;
         });
 
-        volumeBtn.addEventListener('click', () => {
-            volumeBtn.classList.toggle('open');
-            volumeControls.classList.toggle('hidden');
+        volumeBtn.addEventListener("click", () => {
+            volumeBtn.classList.toggle("open");
+            volumeControls.classList.toggle("hidden");
         })
 
-        window.addEventListener('resize', directionAware);
+        window.addEventListener("resize", directionAware);
 
         sliders.forEach(slider => {
-            let pin = slider.querySelector('.pin');
-            slider.addEventListener('click', window[pin.dataset.method]);
+            let pin = slider.querySelector(".pin");
+            slider.addEventListener("click", window[pin.dataset.method]);
         });
 
         directionAware();
@@ -350,7 +350,7 @@
             let rangeBox = getRangeBox(event);
             let rect = rangeBox.getBoundingClientRect();
             let direction = rangeBox.dataset.direction;
-            if (direction === 'horizontal') {
+            if (direction === "horizontal") {
                 let min = rangeBox.offsetLeft;
                 let max = min + rangeBox.offsetWidth;
                 if (event.clientX < min || event.clientX > max) return false;
@@ -365,7 +365,7 @@
         function updateProgress() {
             let current = player.currentTime;
             let percent = (current / player.duration) * 100;
-            progress.style.width = percent + '%';
+            progress.style.width = percent + "%";
 
             currentTime.textContent = formatTime(current);
 
@@ -376,30 +376,30 @@
                     currentSlideshowImageId++;
                     currentSlideshowImageNumber++;
 
-                    $('#slideshow').attr('src', $('#image' + currentSlideshowImageNumber).attr('src'));
+                    $("#slideshow").attr("src", $("#image" + currentSlideshowImageNumber).attr("src"));
                     updateCommentList();
                 } else break;
             }
         }
 
         function updateVolume() {
-            volumeProgress.style.height = player.volume * 100 + '%';
+            volumeProgress.style.height = player.volume * 100 + "%";
             if (player.volume >= 0.5) {
-                speaker.attributes.d.value = 'M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z';
+                speaker.attributes.d.value = "M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z";
             } else if (player.volume < 0.5 && player.volume > 0.05) {
-                speaker.attributes.d.value = 'M0 7.667v8h5.333L12 22.333V1L5.333 7.667M17.333 11.373C17.333 9.013 16 6.987 14 6v10.707c2-.947 3.333-2.987 3.333-5.334z';
+                speaker.attributes.d.value = "M0 7.667v8h5.333L12 22.333V1L5.333 7.667M17.333 11.373C17.333 9.013 16 6.987 14 6v10.707c2-.947 3.333-2.987 3.333-5.334z";
             } else if (player.volume <= 0.05) {
-                speaker.attributes.d.value = 'M0 7.667v8h5.333L12 22.333V1L5.333 7.667';
+                speaker.attributes.d.value = "M0 7.667v8h5.333L12 22.333V1L5.333 7.667";
             }
         }
 
         function getRangeBox(event) {
             let rangeBox = event.target;
             let el = currentlyDragged;
-            if (event.type === 'click' && isDraggable(event.target)) {
+            if (event.type === "click" && isDraggable(event.target)) {
                 rangeBox = event.target.parentElement.parentElement;
             }
-            if (event.type === 'mousemove') {
+            if (event.type === "mousemove") {
                 rangeBox = el.parentElement.parentElement;
             }
             return rangeBox;
@@ -409,11 +409,11 @@
             let slider = getRangeBox(event);
             let rect = slider.getBoundingClientRect();
             let K = 0;
-            if (slider.dataset.direction === 'horizontal') {
+            if (slider.dataset.direction === "horizontal") {
                 let offsetX = event.clientX - slider.offsetLeft;
                 let width = slider.clientWidth;
                 K = offsetX / width;
-            } else if (slider.dataset.direction === 'vertical') {
+            } else if (slider.dataset.direction === "vertical") {
                 let height = slider.clientHeight;
                 let offsetY = event.clientY - rect.top;
                 K = 1 - offsetY / height;
@@ -436,7 +436,7 @@
         function formatTime(time) {
             let min = Math.floor(time / 60);
             let sec = Math.floor(time % 60);
-            return min + ':' + ((sec < 10) ? ('0' + sec) : sec);
+            return min + ":" + ((sec < 10) ? ("0" + sec) : sec);
         }
 
         function togglePlay() {
@@ -450,13 +450,13 @@
         }
 
         function makePlay() {
-            playpauseBtn.style.display = 'block';
-            loading.style.display = 'none';
+            playpauseBtn.style.display = "block";
+            loading.style.display = "none";
         }
 
         function directionAware() {
-            volumeControls.style.bottom = '52px';
-            volumeControls.style.left = '-3px';
+            volumeControls.style.bottom = "52px";
+            volumeControls.style.left = "-3px";
         }
     </script>
 

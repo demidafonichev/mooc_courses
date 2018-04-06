@@ -73,6 +73,8 @@ TEMPLATES = [
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
+
 WSGI_APPLICATION = 'mooc_courses.wsgi.application'
 
 

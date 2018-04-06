@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
     <div class="container">
         <h1 class="my-4">{{ course.title }}</h1>
@@ -49,6 +50,7 @@
                     <span class="sr-only">Next</span>
                 </a>
             </div>
+
             <div id="audio-player" class="audio green-audio-player">
                 <div class="loading">
                     <div class="spinner"></div>
@@ -88,10 +90,12 @@
                 </div>
 
                 <audio crossorigin>
-                    <source src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/355309/Swing_Jazz_Drum.mp3"
+                    <source id="audio-sourse"
+                            src="{{ course.audio.url }}"
                             type="audio/mpeg">
                 </audio>
             </div>
+
             <div id="comment-box">
                 <div id="comment-list" class="comment-list">
                 </div>
@@ -100,16 +104,18 @@
                         <div class="form-group">
                             <textarea class="form-control" id="comment-text" rows="2"></textarea>
                         </div>
-                        <button class="btn btn-dark" id="send-comment">Submit</button>
+                        <button class="btn btn-dark" id="send-comment">Submit comment</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <script src="{% static "js/audio-player.js" %}"></script>
     <script>
         {% autoescape off %}
             let slideList = [];
+            let checkPoints = [];
             let comments;
             {% for slide in slides %}
                 comments = [];
@@ -129,15 +135,20 @@
                     comments: comments
                 });
             {% endfor %}
+            {% for checkPoint in check_points %}
+                checkPoints.push({
+                    number: {{ checkPoint.number }},
+                    time: {{ checkPoint.time }},
+                    slideNumber: {{ checkPoint.number }}
+                });
+            {% endfor %}
         {% endautoescape %}
 
-        let currentSlideshowImageId;
-        let currentSlideshowImageNumber;
+        let currentSlideshowSlideNumber;
 
         $("#play-course").click(function () {
-            currentSlideshowImageNumber = 0;
-            currentSlideshowImageId = slideList[0].id;
-            updateCommentList(currentSlideshowImageNumber);
+            currentSlideshowSlideNumber = 0;
+            updateCommentList(currentSlideshowSlideNumber);
 
             $("#prev-slide").hide();
             $("#next-slide").hide();
@@ -152,10 +163,10 @@
             let prevSlide = $("#prev-slide");
             let nextSlide = $("#next-slide");
 
-            if (currentSlideshowImageNumber === 0) {
+            if (currentSlideshowSlideNumber === 0) {
                 prevSlide.hide();
                 nextSlide.show();
-            } else if (currentSlideshowImageNumber === slideList.length - 1) {
+            } else if (currentSlideshowSlideNumber === slideList.length - 1) {
                 prevSlide.show();
                 nextSlide.hide();
             } else {
@@ -166,7 +177,7 @@
 
         function updateSlideshowImage() {
             let slide = $.grep(slideList, function (e) {
-                return e.number === currentSlideshowImageNumber;
+                return e.number === currentSlideshowSlideNumber;
             })[0];
 
             $("#slideshow").attr("src", slide.image);
@@ -180,67 +191,79 @@
 
         $("img[id^=image]").click(function () {
             {# deleting "image" from id #}
-            currentSlideshowImageNumber = parseInt(this.id.substr(5));
+            currentSlideshowSlideNumber = parseInt(this.id.substr(5));
             let slide = $.grep(slideList, function (e) {
-                return e.number === currentSlideshowImageNumber;
+                return e.number === currentSlideshowSlideNumber;
             })[0];
             updateCommentList();
             updateSlideshowControllers();
 
-            $("#prev-slide").show();
-            $("#next-slide").show();
+            updateSlideshowControllers();
+            updateSlideshowImage();
             $("#audio-player").hide();
             $("#comment-box").css("padding-top", "15px");
-            $("#slideshow").attr("src", slide.image);
 
             $("#slideshow-modal").modal();
         });
 
+        $("#slideshow-modal").on("hidden.bs.modal", function () {
+            togglePlay();
+            player.currentTime = 0;
+        })
+
         $("#prev-slide").click(function () {
-            currentSlideshowImageNumber--;
+            currentSlideshowSlideNumber--;
             updateSlideshow();
         });
 
         $("#next-slide").click(function () {
-            currentSlideshowImageNumber++;
+            currentSlideshowSlideNumber++;
             updateSlideshow();
         });
 
         $("#send-comment").click(function () {
-            let commentField = $("#comment-text")
+            let commentField = $("#comment-text");
             let commentText = commentField.val();
-            $.ajax({
-                url: baseUrl + "courses/save_slide_comment",
-                type: "POST",
-                dataType: "json",
-                data: JSON.stringify({"text": commentText, "slide_id": currentSlideshowImageId}),
-                success: function (commentData) {
-                    let comment = {
-                        id: commentData.id,
-                        slideID: commentData.slide_id,
-                        authorID: commentData.author_id,
-                        authorName: commentData.author_name,
-                        text: commentData.text
+            let currentSlideshowSlideId = $.grep(slideList, function (e) {
+                return e.number === currentSlideshowSlideNumber;
+            })[0].id;
+            if (commentText) {
+                $.ajax({
+                    url: baseUrl + "courses/save_slide_comment",
+                    type: "POST",
+                    dataType: "json",
+                    data: JSON.stringify({"text": commentText, "slide_id": currentSlideshowSlideId}),
+                    success: function (commentData) {
+                        let comment = {
+                            id: commentData.id,
+                            slideID: commentData.slide_id,
+                            authorID: commentData.author_id,
+                            authorName: commentData.author_name,
+                            text: commentData.text
+                        }
+
+                        $.grep(slideList, function (e) {
+                            return e.id === currentSlideshowSlideId;
+                        })[0].comments.push(comment);
+
+                        let commentList = $("#comment-list");
+                        if (!commentList.is(":empty")) {
+                            commentList.append($("<br>"));
+                        }
+                        addCommentToList(comment);
+
+                        commentField.val("");
+                    },
+                    error: function (data) {
+                        console.log("error");
                     }
-
-                    $.grep(slideList, function (e) {
-                        return e.id === currentSlideshowImageId;
-                    })[0].comments.push(comment);
-
-                    $("#comment-list").append($("<br>"));
-                    addCommentToList(comment);
-
-                    commentField.val("");
-                },
-                error: function (data) {
-                    console.log("error");
-                }
-            });
+                });
+            }
         });
 
         function updateCommentList() {
             let slide = $.grep(slideList, function (e) {
-                return e.number === currentSlideshowImageNumber;
+                return e.number === currentSlideshowSlideNumber;
             })[0];
             let commentList = $("#comment-list");
 
@@ -250,6 +273,8 @@
                 if (i !== 0) commentList.append("<br>");
                 addCommentToList(slide.comments[i]);
             }
+
+            $("#comment-text").val("");
         }
 
         function addCommentToList(comment) {
@@ -278,185 +303,22 @@
             commentList.append(commentBlockWrapper);
         }
 
-        let audioPlayer = document.querySelector(".green-audio-player");
-        let playPause = audioPlayer.querySelector("#playPause");
-        let playpauseBtn = audioPlayer.querySelector(".play-pause-btn");
-        let loading = audioPlayer.querySelector(".loading");
-        let progress = audioPlayer.querySelector(".progress");
-        let sliders = audioPlayer.querySelectorAll(".slider");
-        let volumeBtn = audioPlayer.querySelector(".volume-btn");
-        let volumeControls = audioPlayer.querySelector(".volume-controls");
-        let volumeProgress = volumeControls.querySelector(".slider .progress");
-        let player = audioPlayer.querySelector("audio");
-        let currentTime = audioPlayer.querySelector(".current-time");
-        let totalTime = audioPlayer.querySelector(".total-time");
-        let speaker = audioPlayer.querySelector("#speaker");
+        player.addEventListener('timeupdate', updateSlideIfNeed);
 
-        let draggableClasses = ["pin"];
-        let currentlyDragged = null;
+        function updateSlideIfNeed() {
+            if (!$("#slideshow-modal").is(":visible")) {
+                let currentTime = player.currentTime;
+                for (let i = checkPoints.length - 1; i >= 0; --i) {
+                    if (checkPoints[i].time < currentTime) {
+                        let nextSlide = $.grep(slideList, function (e) {
+                            return e.number === checkPoints[i].slideNumber;
+                        })[0];
 
-        window.addEventListener("mousedown", function (event) {
-
-            if (!isDraggable(event.target)) return false;
-
-            currentlyDragged = event.target;
-            let handleMethod = currentlyDragged.dataset.method;
-
-            this.addEventListener("mousemove", window[handleMethod], false);
-
-            window.addEventListener("mouseup", () => {
-                currentlyDragged = false;
-                window.removeEventListener("mousemove", window[handleMethod], false);
-            }, false);
-        });
-
-        playpauseBtn.addEventListener("click", togglePlay);
-        player.addEventListener("timeupdate", updateProgress);
-        player.addEventListener("volumechange", updateVolume);
-        player.addEventListener("loadedmetadata", () => {
-            totalTime.textContent = formatTime(player.duration);
-        });
-        player.addEventListener("canplay", makePlay);
-        player.addEventListener("ended", function () {
-            playPause.attributes.d.value = "M18 12L0 24V0";
-            player.currentTime = 0;
-        });
-
-        volumeBtn.addEventListener("click", () => {
-            volumeBtn.classList.toggle("open");
-            volumeControls.classList.toggle("hidden");
-        })
-
-        window.addEventListener("resize", directionAware);
-
-        sliders.forEach(slider => {
-            let pin = slider.querySelector(".pin");
-            slider.addEventListener("click", window[pin.dataset.method]);
-        });
-
-        directionAware();
-
-        function isDraggable(el) {
-            let canDrag = false;
-            let classes = Array.from(el.classList);
-            draggableClasses.forEach(draggable => {
-                if (classes.indexOf(draggable) !== -1)
-                    canDrag = true;
-            })
-            return canDrag;
-        }
-
-        function inRange(event) {
-            let rangeBox = getRangeBox(event);
-            let rect = rangeBox.getBoundingClientRect();
-            let direction = rangeBox.dataset.direction;
-            if (direction === "horizontal") {
-                let min = rangeBox.offsetLeft;
-                let max = min + rangeBox.offsetWidth;
-                if (event.clientX < min || event.clientX > max) return false;
-            } else {
-                let min = rect.top;
-                let max = min + rangeBox.offsetHeight;
-                if (event.clientY < min || event.clientY > max) return false;
+                        $("#slideshow").attr("src", nextSlide.image);
+                        break;
+                    }
+                }
             }
-            return true;
-        }
-
-        function updateProgress() {
-            let current = player.currentTime;
-            let percent = (current / player.duration) * 100;
-            progress.style.width = percent + "%";
-
-            currentTime.textContent = formatTime(current);
-
-            /* TODO: add changing slides here */
-            let slidesTime = [5, 10, 15, 20, 25, 30, 35];
-            for (let i = currentSlideshowImageNumber; i < slidesTime.length; ++i) {
-                if (player.currentTime > slidesTime[i]) {
-                    currentSlideshowImageId++;
-                    currentSlideshowImageNumber++;
-
-                    $("#slideshow").attr("src", $("#image" + currentSlideshowImageNumber).attr("src"));
-                    updateCommentList();
-                } else break;
-            }
-        }
-
-        function updateVolume() {
-            volumeProgress.style.height = player.volume * 100 + "%";
-            if (player.volume >= 0.5) {
-                speaker.attributes.d.value = "M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z";
-            } else if (player.volume < 0.5 && player.volume > 0.05) {
-                speaker.attributes.d.value = "M0 7.667v8h5.333L12 22.333V1L5.333 7.667M17.333 11.373C17.333 9.013 16 6.987 14 6v10.707c2-.947 3.333-2.987 3.333-5.334z";
-            } else if (player.volume <= 0.05) {
-                speaker.attributes.d.value = "M0 7.667v8h5.333L12 22.333V1L5.333 7.667";
-            }
-        }
-
-        function getRangeBox(event) {
-            let rangeBox = event.target;
-            let el = currentlyDragged;
-            if (event.type === "click" && isDraggable(event.target)) {
-                rangeBox = event.target.parentElement.parentElement;
-            }
-            if (event.type === "mousemove") {
-                rangeBox = el.parentElement.parentElement;
-            }
-            return rangeBox;
-        }
-
-        function getCoefficient(event) {
-            let slider = getRangeBox(event);
-            let rect = slider.getBoundingClientRect();
-            let K = 0;
-            if (slider.dataset.direction === "horizontal") {
-                let offsetX = event.clientX - slider.offsetLeft;
-                let width = slider.clientWidth;
-                K = offsetX / width;
-            } else if (slider.dataset.direction === "vertical") {
-                let height = slider.clientHeight;
-                let offsetY = event.clientY - rect.top;
-                K = 1 - offsetY / height;
-            }
-            return K;
-        }
-
-        function rewind(event) {
-            if (inRange(event)) {
-                player.currentTime = player.duration * getCoefficient(event);
-            }
-        }
-
-        function changeVolume(event) {
-            if (inRange(event)) {
-                player.volume = getCoefficient(event);
-            }
-        }
-
-        function formatTime(time) {
-            let min = Math.floor(time / 60);
-            let sec = Math.floor(time % 60);
-            return min + ":" + ((sec < 10) ? ("0" + sec) : sec);
-        }
-
-        function togglePlay() {
-            if (player.paused) {
-                playPause.attributes.d.value = "M0 0h6v24H0zM12 0h6v24h-6z";
-                player.play();
-            } else {
-                playPause.attributes.d.value = "M18 12L0 24V0";
-                player.pause();
-            }
-        }
-
-        function makePlay() {
-            playpauseBtn.style.display = "block";
-            loading.style.display = "none";
-        }
-
-        function directionAware() {
-            volumeControls.style.bottom = "52px";
-            volumeControls.style.left = "-3px";
         }
     </script>
 

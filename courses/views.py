@@ -87,7 +87,7 @@ def get_course(request, course_id):
                 "id": comment.id,
                 "slide_id": comment.slide.id,
                 "author_id": comment.author.id if comment.author else -1,
-                "author_name": comment.author if comment.author else """""",
+                "author_name": comment.author if comment.author else "",
                 "text": comment.text
             })
         slides.append({"id": slide.pk,

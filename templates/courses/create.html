@@ -66,7 +66,17 @@
                     <source id="audio-source" src="" type="audio/mpeg">
                 </audio>
             </div>
-            <button id="next-slide-button" class="btn btn-dark" type="submit">Next slide</button>
+            <div id="slide-controllers">
+                <button id="next-slide-button" class="btn btn-dark" type="submit">Next slide</button>
+                <div class="dropdown">
+                    <button id="choose-slide-button" class="btn btn-secondary dropdown-toggle" type="button"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Choose slide
+                    </button>
+                    <div id="slide-list" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    </div>
+                </div>
+            </div>
         </div>
         <h3 class="my-4" id="slides-label">All slides</h3>
         <div class="row" id="images">
@@ -103,14 +113,14 @@
             $("#cover-label").hide();
             $("#slides-label").hide();
             $("#audio-player").hide();
-            $("#next-slide-button").hide();
+            $("#slide-controllers").hide();
         });
 
         let course = {};
         let slides = [];
         let audioFile = {};
         let checkPoints = [];
-        let currentSlideshowImageNumber = 0;
+        let currentSlideshowSlideNumber = 0;
         $("#presentation-input").change(function () {
             $("#presentation-input-group").hide();
             slides = [];
@@ -154,6 +164,7 @@
 
                 slides.forEach(function (e) {
                     createImageDom(e);
+                    addSlideToChooseList(e);
                 })
             }
 
@@ -174,10 +185,6 @@
                     text: slide.name
                 });
 
-                image.click(function () {
-                    $("#course-cover").attr("src", this.src);
-                });
-
                 imageWrapper.append(image);
                 imageWrapper.append(cardBody);
 
@@ -186,17 +193,36 @@
 
                 if (slide.number === 0) {
                     $("#course-cover").attr("src", slide.data);
+                    currentSlideshowSlideNumber = 0;
                 }
             }
 
+            function addSlideToChooseList(slide) {
+                let slideLine = $("<a>", {
+                    class: "dropdown-item",
+                    text: slide.name
+                });
+                slideLine.click(function () {
+                    currentSlideshowSlideNumber = slide.number;
+                    checkPoints.push({
+                        number: checkPoints.length,
+                        time: player.currentTime,
+                        slide_number: currentSlideshowSlideNumber
+                    });
+                    $("#course-cover").attr("src", slide.data);
+                });
+                $("#slide-list").append(slideLine);
+            }
+
             if (!$("#audio-input").is(":visible")) {
-                $("#next-slide-button").show();
+                $("#slide-controllers").show();
                 checkPoints.push({
                     number: 0,
                     time: 0,
-                    slide_number: currentSlideshowImageNumber
+                    slide_number: currentSlideshowSlideNumber
                 });
             }
+            console.log(slides);
         });
 
         $("#audio-input").change(function () {
@@ -217,27 +243,29 @@
             $("#audio-player").show();
 
             if (!$("#presentation-input").is(":visible")) {
-                $("#next-slide-button").show();
+                $("#slide-controllers").show();
                 checkPoints.push({
                     number: 0,
                     time: 0,
-                    slide_number: currentSlideshowImageNumber
+                    slide_number: currentSlideshowSlideNumber
                 });
             }
         });
 
         $("#next-slide-button").click(function () {
+            currentSlideshowSlideNumber++;
             checkPoints.push({
                 number: checkPoints.length,
                 time: player.currentTime,
-                slide_number: currentSlideshowImageNumber + 1
+                slide_number: currentSlideshowSlideNumber
             });
 
+            console.log(currentSlideshowSlideNumber);
             let nextSlide = $.grep(slides, function (e) {
-                return e.number === currentSlideshowImageNumber + 1;
+                return e.number === currentSlideshowSlideNumber;
             })[0];
+            console.log(nextSlide);
             $("#course-cover").attr("src", nextSlide.data);
-            currentSlideshowImageNumber++;
         });
 
         $("#save").click(function () {
@@ -246,6 +274,7 @@
             course.slides = slides;
             course.audio = audioFile;
             course.check_points = checkPoints;
+            console.log(checkPoints);
 
             let formData = new FormData();
             formData.append("course", JSON.stringify(course));
@@ -265,6 +294,5 @@
         });
     </script>
     <script src="{% static "js/audio-player.js" %}"></script>
-    <script src="{% static "js/popper.min.js" %}"></script>
 
 {% endblock %}

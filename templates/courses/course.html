@@ -206,7 +206,8 @@
         });
 
         $("#slideshow-modal").on("hidden.bs.modal", function () {
-            togglePlay();
+            playPause.attributes.d.value = "M18 12L0 24V0";
+            player.pause();
             player.currentTime = 0;
         })
 

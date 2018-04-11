@@ -2,6 +2,7 @@ import ast
 import base64
 import json
 
+from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
@@ -30,7 +31,10 @@ def create_course(request):
 
 def save_course(request):
     course_data = ast.literal_eval(request.POST["course"])
+    author = User.objects.get(username=request.user.username)
+
     course = Course.objects.create(
+        author=author,
         title=course_data["title"],
         description=course_data["description"],
     )

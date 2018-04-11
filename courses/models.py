@@ -5,6 +5,11 @@ from django.utils.translation import ugettext_lazy as _
 
 
 class Course(models.Model):
+    author = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.CASCADE
+    )
     title = models.CharField(
         max_length=100,
         blank=True,
@@ -24,7 +29,7 @@ class Course(models.Model):
     )
 
     def __str__(self):
-        return self.title.replace(" ", "_")
+        return "_".join([self.author.username, self.title.replace(" ", "_")])
 
 
 class VideoCourse(Course):
@@ -66,7 +71,6 @@ class Comment(models.Model):
         help_text=_("Comment to slide"),
         on_delete=models.CASCADE
     )
-    # TODO: change to custom user
     author = models.ForeignKey(
         User,
         blank=True,

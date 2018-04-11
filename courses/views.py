@@ -106,7 +106,7 @@ def delete_course(request, course_id):
 
 
 @csrf_exempt
-def save_slide_comment(request):
+def save_comment(request):
     comment_data = json.loads(request.body.decode("utf-8"))
     comment = Comment.objects.create(
         text=comment_data["text"],

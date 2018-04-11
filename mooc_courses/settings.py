@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'courses'
+    'courses',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -76,6 +77,8 @@ MEDIA_URL = '/media/'
 DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880
 
 WSGI_APPLICATION = 'mooc_courses.wsgi.application'
+
+LOGIN_REDIRECT_URL = '/accounts/profile'
 
 
 # Database

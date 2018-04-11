@@ -285,10 +285,6 @@
         function addCommentToList(comment) {
             let commentList = $("#comment-list");
             let commentBlockWrapper = $("<div>", {class: "comment-block media mb-0"})
-            let authorImage = $("<img>", {
-                class: "d-flex mr-3 rounded-circle",
-                src: "http://placehold.it/50x50"
-            })
             let commentWrapper = $("<div>", {class: "media-body"})
             let commentAuthor = $("<div>", {
                 class: "mt-0 commenter-name",
@@ -302,7 +298,6 @@
             commentWrapper.append(commentAuthor);
             commentWrapper.append(commentText);
 
-            commentBlockWrapper.append(authorImage);
             commentBlockWrapper.append(commentWrapper);
 
             commentList.append(commentBlockWrapper);

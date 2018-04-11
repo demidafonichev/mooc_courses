@@ -11,7 +11,6 @@ from courses.models import Course, Slide
 
 @login_required(login_url="login/")
 def profile(request):
-
     courses = []
     for course in Course.objects.filter(author=User.objects.get(username=request.user.username)):
         cover = Slide.objects.get(course=course, number=0)

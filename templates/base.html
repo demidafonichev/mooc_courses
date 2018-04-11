@@ -24,13 +24,14 @@
         {% if user.is_authenticated %}
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <div class="dropdown">
-                    <button class="btn btn-dark dropdown-toggle" type="button" id="dropdownMenuButton"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <a class="nav-link" href="{% url "profile" %}">{{ user.username }}</a>
-                    </button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <a class="dropdown-item" href="{% url "logout" %}">Выйти</a>
-                    </div>
+                    <ul class="navbar-nav mr-auto">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url "profile" %}">{{ user.username }}</a>
+                        </li>
+                        <li>
+                            <a class="nav-link" href="{% url "logout" %}">Выйти</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
         {% else %}

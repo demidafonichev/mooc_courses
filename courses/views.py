@@ -77,6 +77,7 @@ def save_course(request):
 
 def get_course(request, course_id):
     course = Course.objects.get(pk=course_id)
+    author = course.author
     slides = []
     check_points = []
     for check_point in CheckPoint.objects.filter(course=course):
@@ -100,6 +101,7 @@ def get_course(request, course_id):
                        "comments": comments})
 
     return render(request, "courses/course.html", {"course": course,
+                                                   "author": author,
                                                    "slides": slides,
                                                    "check_points": check_points})
 

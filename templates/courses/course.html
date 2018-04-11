@@ -30,11 +30,16 @@
             {% endfor %}
         </div>
 
-        <div class="modal-footer">
-            <a href="{% url "delete_course" course_id=course.id %}">
-                <button id="delete" class="btn btn-outline-dark" type="submit">Удалить</button>
-            </a>
-        </div>
+        {% if author.username == request.user.username %}
+            <div class="modal-footer">
+                <a href="{% url "delete_course" course_id=course.id %}">
+                    <button id="delete" class="btn btn-outline-dark" type="submit">Редактировать</button>
+                </a>
+                <a href="{% url "delete_course" course_id=course.id %}">
+                    <button id="delete" class="btn btn-dark" type="submit">Удалить</button>
+                </a>
+            </div>
+        {% endif %}
     </div>
 
     <div id="slideshow-modal" class="modal-centered modal">

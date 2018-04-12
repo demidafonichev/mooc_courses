@@ -194,11 +194,13 @@
             updateSlideshowControllers();
         }
 
+        function getImageNumberFromID(id) {
+            return parseInt(id.substr("image".length));
+        }
+
         $("img[id^=image]").click(function () {
-            currentSlideshowSlideNumber = parseInt(this.id.substr(5));
-            let slide = $.grep(slideList, function (e) {
-                return e.number === currentSlideshowSlideNumber;
-            })[0];
+            currentSlideshowSlideNumber = getImageNumberFromID(this.id);
+
             updateCommentList();
             updateSlideshowControllers();
 

@@ -64,6 +64,7 @@ def save_course(request):
             image
         )
 
+    # Save checkpoints
     for check_point_data in course_data["check_points"]:
         check_point = CheckPoint.objects.create(
             course=course,

@@ -253,19 +253,21 @@
         });
 
         $("#next-slide-button").click(function () {
-            currentSlideshowSlideNumber++;
-            checkPoints.push({
-                number: checkPoints.length,
-                time: player.currentTime,
-                slide_number: currentSlideshowSlideNumber
-            });
+            if (currentSlideshowSlideNumber !== slides.length - 1) {
+                currentSlideshowSlideNumber++;
+                checkPoints.push({
+                    number: checkPoints.length,
+                    time: player.currentTime,
+                    slide_number: currentSlideshowSlideNumber
+                });
 
-            console.log(currentSlideshowSlideNumber);
-            let nextSlide = $.grep(slides, function (e) {
-                return e.number === currentSlideshowSlideNumber;
-            })[0];
-            console.log(nextSlide);
-            $("#course-cover").attr("src", nextSlide.data);
+                console.log(currentSlideshowSlideNumber);
+                let nextSlide = $.grep(slides, function (e) {
+                    return e.number === currentSlideshowSlideNumber;
+                })[0];
+                console.log(nextSlide);
+                $("#course-cover").attr("src", nextSlide.data);
+            }
         });
 
         $("#save").click(function () {

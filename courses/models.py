@@ -3,6 +3,9 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
+from django.db.models.signals import pre_delete
+from django.dispatch.dispatcher import receiver
+
 
 class Course(models.Model):
     author = models.ForeignKey(
@@ -32,14 +35,9 @@ class Course(models.Model):
         return "_".join([self.author.username, self.title.replace(" ", "_")])
 
 
-class VideoCourse(Course):
-    video = models.FileField(
-        upload_to="videos/"
-    )
-
-
-class PresentationCourse(Course):
-    pass
+@receiver(pre_delete, sender=Course)
+def course_delete_audio(sender, instance, **kwargs):
+    instance.audio.delete(False)
 
 
 class Slide(models.Model):
@@ -63,6 +61,11 @@ class Slide(models.Model):
             str(self.number),
             str(self.id)
         ])
+
+
+@receiver(pre_delete, sender=Slide)
+def slide_delete_image(sender, instance, **kwargs):
+    instance.image.delete(False)
 
 
 class Comment(models.Model):

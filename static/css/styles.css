@@ -86,9 +86,6 @@ body {
     position: relative;
 }
 
-
-
-
 .login-page {
     width: 360px;
     padding: 8% 0 0;
@@ -185,4 +182,35 @@ body {
 
 .nav-link, .nav-link:hover, .nav-link:active, .nav-link:focus {
     color: #ffffff;
+}
+
+.form-control {
+    border: 1px solid #343a40;
+}
+
+.checkpoints-wrapper {
+    width: 100%;
+}
+
+#checkpoints-list {
+    border: 1px solid #343a40;
+    border-radius: 0.25rem;
+}
+
+.table-row {
+    width: 100%;
+}
+
+.table-head {
+    background-color: #343a40;
+    color: #ffffff;
+}
+
+.table-col {
+    width: 100%;
+}
+
+.delete-checkpoint {
+    position: absolute;
+    right: 0;
 }

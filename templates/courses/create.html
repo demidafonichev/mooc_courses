@@ -78,8 +78,15 @@
                 </div>
             </div>
         </div>
-        <h3 class="my-4" id="slides-label">All slides</h3>
-        <div class="row" id="images">
+        <div class="row">
+            <div class="col-md-8 col-sm-8 mb-4">
+                <h3 class="my-4" id="slides-label">All slides</h3>
+                <div class="row" id="images">
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-4 mb-4 checkpoints-wrapper" id="checkpoints-wrapper">
+                <h3 class="my-4" id="checkpoints-label">Checkpoints</h3>
+            </div>
         </div>
         <button id="save" class="btn btn-dark" type="submit">Save</button>
     </div><!-- /.container -->
@@ -112,6 +119,7 @@
         $(document).ready(function () {
             $("#cover-label").hide();
             $("#slides-label").hide();
+            $("#checkpoints-label").hide();
             $("#audio-player").hide();
             $("#slide-controllers").hide();
         });
@@ -127,6 +135,7 @@
             $("#images").empty();
             $("#cover-label").show();
             $("#slides-label").show();
+
             let selectedFiles = this.files;
 
             for (let i = 0; i < selectedFiles.length; ++i) {
@@ -166,6 +175,8 @@
                     createImageDom(e);
                     addSlideToChooseList(e);
                 })
+
+                console.log("slides: ", slides);
             }
 
             function createImageDom(slide) {
@@ -204,12 +215,14 @@
                 });
                 slideLine.click(function () {
                     currentSlideshowSlideNumber = slide.number;
-                    checkPoints.push({
+                    let checkPoint = {
                         number: checkPoints.length,
                         time: player.currentTime,
                         slide_number: currentSlideshowSlideNumber
-                    });
+                    };
+                    checkPoints.push(checkPoint);
                     $("#course-cover").attr("src", slide.data);
+                    addCheckPointToCheckpointsList(checkPoint);
                 });
                 $("#slide-list").append(slideLine);
             }
@@ -221,6 +234,9 @@
                     time: 0,
                     slide_number: currentSlideshowSlideNumber
                 });
+                $("#checkpoints-label").show();
+                initCheckpointsList();
+                fillCheckPointsList();
             }
             console.log(slides);
         });
@@ -249,26 +265,121 @@
                     time: 0,
                     slide_number: currentSlideshowSlideNumber
                 });
+                $("#checkpoints-label").show();
+                initCheckpointsList();
+                fillCheckPointsList();
             }
         });
 
         $("#next-slide-button").click(function () {
             if (currentSlideshowSlideNumber !== slides.length - 1) {
                 currentSlideshowSlideNumber++;
-                checkPoints.push({
+                let checkPoint = {
                     number: checkPoints.length,
                     time: player.currentTime,
                     slide_number: currentSlideshowSlideNumber
-                });
+                }
+                checkPoints.push(checkPoint);
 
-                console.log(currentSlideshowSlideNumber);
+                {#console.log(currentSlideshowSlideNumber);#}
                 let nextSlide = $.grep(slides, function (e) {
                     return e.number === currentSlideshowSlideNumber;
                 })[0];
-                console.log(nextSlide);
+                {#console.log(nextSlide);#}
                 $("#course-cover").attr("src", nextSlide.data);
+
+                addCheckPointToCheckpointsList(checkPoint);
             }
         });
+
+        function initCheckpointsList() {
+            let checkPointsList = $("<div>", {
+                id: "checkpoints-list"
+            });
+            $("#checkpoints-wrapper").append(checkPointsList);
+        }
+
+        function fillCheckPointsList() {
+            console.log(checkPoints);
+
+            $("#checkpoints-list").empty();
+            addCheckPointToCheckpointsList({}, true, false);
+            addCheckPointToCheckpointsList(checkPoints[0], false, true);
+            console.log(checkPoints.length);
+            for (let i = 1; i < checkPoints.length; ++i) {
+                addCheckPointToCheckpointsList(checkPoints[i], false, false);
+            }
+        }
+
+        function addCheckPointToCheckpointsList(checkPoint, head, firstSlide) {
+            console.log(checkPoint, head, firstSlide);
+            let rowClass;
+            if (head) {
+                rowClass = "row table-row table-head margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
+            } else {
+                rowClass = "row table-row margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
+            }
+
+            let checkpointRowWrapper = $("<div>", {
+                class: rowClass
+            });
+            let checkpointTimeColumnWrapper = $("<div>", {
+                class: "col-md-3 table-col"
+            });
+            let checkpointSlideColumnWrapper = $("<div>", {
+                class: "col-md-3 table-col"
+            });
+
+            let checkPointTime;
+            if (head) {
+                checkPointTime = "Время";
+            } else {
+                checkPointTime = checkPoint.time;
+            }
+
+            let checkpointTimeCellWrapper = $("<div>", {
+                class: "cell",
+                text: checkPointTime
+            });
+            checkpointTimeColumnWrapper.append(checkpointTimeCellWrapper);
+            checkpointRowWrapper.append(checkpointTimeColumnWrapper);
+
+            let checkPointSlideName;
+            if (head) {
+                checkPointSlideName = "Слайд";
+            } else {
+                let checkPointSlideNumber = checkPoint.slide_number;
+                let slide = $.grep(slides, function (e) {
+                    return e.number === checkPointSlideNumber;
+                })[0];
+                checkPointSlideName = slide.name;
+                console.log(slide);
+            }
+
+            let checkpointSlideCellWrapper = $("<div>", {
+                class: "cell",
+                text: checkPointSlideName
+            });
+            checkpointSlideColumnWrapper.append(checkpointSlideCellWrapper);
+            checkpointRowWrapper.append(checkpointSlideColumnWrapper);
+
+            if (!head && !firstSlide) {
+                let deleteCheckpointButton = $("<div>", {
+                    class: "delete-checkpoint",
+                    text: "X"
+                });
+                checkpointRowWrapper.append(deleteCheckpointButton);
+                deleteCheckpointButton.click(function () {
+                    let i = checkPoints.indexOf(checkPoint);
+                    checkPoints.splice(i, 1);
+
+                    fillCheckPointsList();
+                });
+            }
+
+            let checkPointList = $("#checkpoints-list");
+            checkPointList.append(checkpointRowWrapper);
+        }
 
         $("#save").click(function () {
             course.title = $("#title").val();

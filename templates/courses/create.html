@@ -69,17 +69,17 @@
             </div>
         </div>
         <div id="slide-controllers" class="btn-group">
-                <button id="next-slide-button" class="btn btn-dark">Следующий слайд</button>
-                <div class="dropdown">
-                    <button id="choose-slide-button" class="btn btn-secondary dropdown-toggle" type="button"
-                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Choose slide
-                    </button>
-                    <div id="slide-list" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    </div>
+            <button id="next-slide-button" class="btn btn-dark">Следующий слайд</button>
+            <div class="dropdown">
+                <button id="choose-slide-button" class="btn btn-secondary dropdown-toggle" type="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Choose slide
+                </button>
+                <div id="slide-list" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 </div>
             </div>
-            <button id="pointer-button" class="btn btn-dark">Указатель</button>
+        </div>
+        <button id="pointer-button" class="btn btn-dark">Указатель</button>
         <div class="row">
             <div class="col-md-8 col-sm-8 mb-4">
                 <h3 class="my-4" id="slides-label">All slides</h3>
@@ -192,7 +192,7 @@
                 let ready = true;
                 slides.forEach(function (e) {
                     if (!e.data) ready = false;
-                })
+                });
 
                 if (ready) done();
             }
@@ -202,12 +202,12 @@
                     if (a.number > b.number) return 1;
                     if (a.number < b.number) return -1;
                     return 0;
-                })
+                });
 
                 slides.forEach(function (e) {
                     createImageDom(e);
                     addSlideToChooseList(e);
-                })
+                });
 
                 console.log("slides: ", slides);
             }
@@ -263,7 +263,16 @@
                     };
                     checkPoints.push(checkPoint);
                     $("#course-cover").css("backgroundImage", "url(" + slide.data + ")");
-                    addCheckPointToCheckpointsList(checkPoint);
+
+                    checkPoints.sort(function (a, b) {
+                        if (a.time > b.time) return 1;
+                        if (a.time < b.time) return -1;
+                        return 0;
+                    });
+                    for (let i = 0; i < checkPoints.length; ++i) {
+                        checkPoints[i].number = i;
+                    }
+                    fillCheckPointsList();
                 });
                 $("#slide-list").append(slideLine);
             }
@@ -361,7 +370,12 @@
 
                 pointer.end_time = player.currentTime;
                 pointers.push(pointer);
-                addPointerToPointersList(pointer, false);
+                pointers.sort(function(a, b) {
+                    if (a.start_time > b.start_time) return 1;
+                    if (a.start_time < b.start_time) return -1;
+                    return 0;
+                });
+                fillPointersList();
 
                 console.log(pointer);
                 console.log(pointers);
@@ -377,13 +391,20 @@
                     slide_number: currentSlideshowSlideNumber
                 }
                 checkPoints.push(checkPoint);
+                console.log("here");
+
+                checkPoints.sort(function (a, b) {
+                    if (a.time > b.time) return 1;
+                    if (a.time < b.time) return -1;
+                    return 0;
+                });
 
                 let nextSlide = $.grep(slides, function (e) {
                     return e.number === currentSlideshowSlideNumber;
                 })[0];
 
                 $("#course-cover").css("backgroundImage", "url(" + nextSlide.data + ")");
-                addCheckPointToCheckpointsList(checkPoint, false, false);
+                fillCheckPointsList();
             }
         });
 

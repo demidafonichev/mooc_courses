@@ -66,8 +66,9 @@
                     <source id="audio-source" src="" type="audio/mpeg">
                 </audio>
             </div>
-            <div id="slide-controllers">
-                <button id="next-slide-button" class="btn btn-dark" type="submit">Next slide</button>
+            <div id="slide-controllers" class="btn-group">
+                <button id="pointer-button" class="btn btn-dark">Указатель</button>
+                <button id="next-slide-button" class="btn btn-dark">Следующий слайд</button>
                 <div class="dropdown">
                     <button id="choose-slide-button" class="btn btn-secondary dropdown-toggle" type="button"
                             data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -334,7 +335,7 @@
             if (head) {
                 checkPointTime = "Время";
             } else {
-                checkPointTime = checkPoint.time;
+                checkPointTime = formatTime(checkPoint.time);
             }
 
             let checkpointTimeCellWrapper = $("<div>", {
@@ -364,9 +365,10 @@
             checkpointRowWrapper.append(checkpointSlideColumnWrapper);
 
             if (!head && !firstSlide) {
-                let deleteCheckpointButton = $("<div>", {
-                    class: "delete-checkpoint",
-                    text: "X"
+                let deleteCheckpointButton = $("<button>", {
+                    class: "close delete-checkpoint",
+                    type: "button",
+                    html: "<span>&times;</span>"
                 });
                 checkpointRowWrapper.append(deleteCheckpointButton);
                 deleteCheckpointButton.click(function () {

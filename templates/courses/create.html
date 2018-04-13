@@ -129,7 +129,12 @@
         let slides = [];
         let audioFile = {};
         let checkPoints = [];
+        let pointers = [];
         let currentSlideshowSlideNumber = 0;
+        let pointClicked;
+        let pointing;
+        let pointer;
+
         $("#presentation-input").change(function () {
             $("#presentation-input-group").hide();
             slides = [];
@@ -272,6 +277,44 @@
             }
         });
 
+        $("#pointer-button").click(function () {
+            pointClicked = true;
+        });
+
+        $("#course-cover").click(function () {
+            if (pointClicked) {
+                if (!pointing) {
+                    pointing = true;
+                    pointer = {
+                        startTime: player.currentTime,
+                        points: [{
+                            time: player.currentTime,
+                            x: 1,
+                            y: 2
+                        }]
+                    }
+                } else {
+                    pointClicked = false;
+                    pointing = false;
+                    pointer.endTime = player.currentTime;
+
+                    pointers.push(pointer);
+                    console.log(pointer);
+                    console.log(pointers);
+                }
+            }
+        });
+
+        $("#course-cover").mousemove(function () {
+            if (pointing) {
+                pointer.points.push({
+                    time: player.currentTime,
+                    x: 1,
+                    y: 2
+                });
+            }
+        });
+
         $("#next-slide-button").click(function () {
             if (currentSlideshowSlideNumber !== slides.length - 1) {
                 currentSlideshowSlideNumber++;
@@ -368,7 +411,7 @@
                 let deleteCheckpointButton = $("<button>", {
                     class: "close delete-checkpoint",
                     type: "button",
-                    html: "<span>&times;</span>"
+                    html: "<span aria-hidden=\"true\">&times;</span>"
                 });
                 checkpointRowWrapper.append(deleteCheckpointButton);
                 deleteCheckpointButton.click(function () {

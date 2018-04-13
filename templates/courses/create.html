@@ -88,6 +88,11 @@
             </div>
             <div class="col-md-4 col-sm-4 mb-4 checkpoints-wrapper" id="checkpoints-wrapper">
                 <h3 class="my-4" id="checkpoints-label">Checkpoints</h3>
+                <div id="checkpoints-list">
+                </div>
+                <h3 class="my-4" id="pointers-label">Указатели</h3>
+                <div id="pointers-list">
+                </div>
             </div>
         </div>
         <button id="save" class="btn btn-dark" type="submit">Save</button>
@@ -122,8 +127,10 @@
             $("#cover-label").hide();
             $("#slides-label").hide();
             $("#checkpoints-label").hide();
+            $("#checkpoints-list").hide();
             $("#audio-player").hide();
             $("#slide-controllers").hide();
+            $("#pointers-label").hide();
         });
 
         $(window).resize(function () {
@@ -263,7 +270,8 @@
                     slide_number: currentSlideshowSlideNumber
                 });
                 $("#checkpoints-label").show();
-                initCheckpointsList();
+                $("#checkpoints-list").show();
+                $("#pointers-label").show();
                 fillCheckPointsList();
             }
             console.log(slides);
@@ -294,7 +302,8 @@
                     slide_number: currentSlideshowSlideNumber
                 });
                 $("#checkpoints-label").show();
-                initCheckpointsList();
+                $("#checkpoints-list").show();
+                $("#pointers-label").show();
                 fillCheckPointsList();
             }
         });
@@ -356,13 +365,6 @@
                 addCheckPointToCheckpointsList(checkPoint);
             }
         });
-
-        function initCheckpointsList() {
-            let checkPointsList = $("<div>", {
-                id: "checkpoints-list"
-            });
-            $("#checkpoints-wrapper").append(checkPointsList);
-        }
 
         function fillCheckPointsList() {
             console.log(checkPoints);

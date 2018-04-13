@@ -196,7 +196,7 @@ body {
     width: 100%;
 }
 
-#checkpoints-list {
+#checkpoints-list, #pointers-list {
     border: 1px solid #343a40;
     border-radius: 0.25rem;
 }

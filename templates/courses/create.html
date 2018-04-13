@@ -23,7 +23,8 @@
 
         <h2 class="my-4" id="cover-label">Course cover</h2>
         <div class="cover-wrapper">
-            <img id="course-cover" class="img-fluid" src="" alt="">
+            <div id="course-cover" class="img-fluid"></div>
+            {#            <img id="course-cover" class="img-fluid" src="" alt="">#}
             <div id="audio-player" class="audio green-audio-player">
                 <div class="loading">
                     <div class="spinner"></div>
@@ -125,6 +126,16 @@
             $("#slide-controllers").hide();
         });
 
+        $(window).resize(function () {
+            resizeCourseCoverDiv();
+        });
+
+        function resizeCourseCoverDiv() {
+            let courseCover = $("#course-cover");
+            let courseCoverWidth = courseCover.width();
+            courseCover.height(courseCoverWidth * imageHeight / imageWidth);
+        }
+
         let course = {};
         let slides = [];
         let audioFile = {};
@@ -135,9 +146,12 @@
         let pointing;
         let pointer;
 
+        let imageHeight;
+        let imageWidth;
+
         $("#presentation-input").change(function () {
-            $("#presentation-input-group").hide();
             slides = [];
+            $("#presentation-input-group").hide();
             $("#images").empty();
             $("#cover-label").show();
             $("#slides-label").show();
@@ -209,7 +223,15 @@
                 $("#images").append(cardWrapper);
 
                 if (slide.number === 0) {
-                    $("#course-cover").attr("src", slide.data);
+                    let image = new Image();
+                    image.src = slide.data;
+                    image.onload = function () {
+                        imageWidth = image.naturalWidth;
+                        imageHeight = image.naturalHeight;
+                        console.log("(", imageWidth, "; ", imageHeight, ")");
+                        resizeCourseCoverDiv();
+                        $("#course-cover").css("background-image", "url(" + slide.data + ")");
+                    };
                     currentSlideshowSlideNumber = 0;
                 }
             }
@@ -227,7 +249,7 @@
                         slide_number: currentSlideshowSlideNumber
                     };
                     checkPoints.push(checkPoint);
-                    $("#course-cover").attr("src", slide.data);
+                    $("#course-cover").css("backgroundImage", slide.data);
                     addCheckPointToCheckpointsList(checkPoint);
                 });
                 $("#slide-list").append(slideLine);
@@ -330,7 +352,7 @@
                     return e.number === currentSlideshowSlideNumber;
                 })[0];
                 {#console.log(nextSlide);#}
-                $("#course-cover").attr("src", nextSlide.data);
+                $("#course-cover").css("backgroundImage", nextSlide.data);
 
                 addCheckPointToCheckpointsList(checkPoint);
             }

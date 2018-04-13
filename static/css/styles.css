@@ -13,6 +13,10 @@ body {
 
 /* Course cover styles */
 
+#course-cover {
+    background-size: 100%;
+}
+
 .cover-wrapper {
     position: relative;
     align-content: center;

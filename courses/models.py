@@ -119,3 +119,42 @@ class CheckPoint(models.Model):
             str(self.time),
             str(self.slide_number)
         ])
+
+
+class Pointer(models.Model):
+    course = models.ForeignKey(
+        "courses.Course",
+        help_text=_("Pointer"),
+        on_delete=models.CASCADE
+    )
+    start_time = models.FloatField(
+        default=.0,
+        help_text=_("Pointer start time")
+    )
+    end_time = models.FloatField(
+        default=.0,
+        help_text=_("Pointer end time")
+    )
+
+    def __str__(self):
+        return "_".join([
+            str(self.course),
+            str(self.start_time),
+            str(self.end_time)
+        ])
+
+
+class Point(models.Model):
+    pointer = models.ForeignKey(
+        "courses.Pointer",
+        help_text=_("Pointer point"),
+        on_delete=models.CASCADE
+    )
+    left = models.FloatField(
+        default=.0,
+        help_text=_("Coordinate from left")
+    )
+    top = models.FloatField(
+        default=.0,
+        help_text=_("Coordinate from top")
+    )

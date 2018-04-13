@@ -10,7 +10,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from rest_framework import status
 
-from courses.models import Slide, Course, Comment, CheckPoint
+from courses.models import Slide, Course, Comment, CheckPoint, Pointer, Point
 
 
 def courses_catalog(request):
@@ -31,7 +31,6 @@ def create_course(request):
 
 def save_course(request):
     course_data = ast.literal_eval(request.POST["course"])
-    print(course_data["pointers"])
     author = User.objects.get(username=request.user.username)
 
     course = Course.objects.create(
@@ -73,6 +72,20 @@ def save_course(request):
             time=check_point_data["time"],
             slide_number=check_point_data["slide_number"]
         )
+
+    # Save pointers
+    for pointer_data in course_data["pointers"]:
+        pointer = Pointer.objects.create(
+            course=course,
+            start_time=pointer_data["start_time"],
+            end_time=pointer_data["end_time"]
+        )
+        for point_data in pointer["points"]:
+            point = Point.objects.create(
+                pointer=pointer,
+                left=point_data["left"],
+                top=point_data["top"]
+            )
 
     return HttpResponse(status=status.HTTP_200_OK)
 

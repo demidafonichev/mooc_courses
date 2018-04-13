@@ -257,7 +257,7 @@
                         slide_number: currentSlideshowSlideNumber
                     };
                     checkPoints.push(checkPoint);
-                    $("#course-cover").css("backgroundImage", slide.data);
+                    $("#course-cover").css("backgroundImage", "url(" + slide.data + ")");
                     addCheckPointToCheckpointsList(checkPoint);
                 });
                 $("#slide-list").append(slideLine);
@@ -322,7 +322,7 @@
                 pointing = true;
                 let offset = $("#course-cover").offset();
                 pointer = {
-                    startTime: player.currentTime,
+                    start_time: player.currentTime,
                     points: [{
                         time: player.currentTime,
                         left: e.pageX - offset.left,
@@ -347,9 +347,11 @@
             if (pointing) {
                 pointClicked = false;
                 pointing = false;
-                pointer.endTime = player.currentTime;
+
+                pointer.end_time = player.currentTime;
                 pointers.push(pointer);
                 addPointerToPointersList(pointer, false);
+
                 console.log(pointer);
                 console.log(pointers);
             }
@@ -369,8 +371,8 @@
                     return e.number === currentSlideshowSlideNumber;
                 })[0];
 
-                $("#course-cover").css("backgroundImage", nextSlide.data);
-                addCheckPointToCheckpointsList(checkPoint);
+                $("#course-cover").css("backgroundImage", "url(" + nextSlide.data + ")");
+                addCheckPointToCheckpointsList(checkPoint, false, false);
             }
         });
 
@@ -485,7 +487,7 @@
             if (head) {
                 pointerTimeStart = "Время начала";
             } else {
-                pointerTimeStart = formatTime(pointer.startTime);
+                pointerTimeStart = formatTime(pointer.start_time);
             }
 
             let pointerTimeStartCellWrapper = $("<div>", {
@@ -500,7 +502,7 @@
             if (head) {
                 pointerTimeEnd = "Время конца";
             } else {
-                pointerTimeEnd = formatTime(pointer.endTime);
+                pointerTimeEnd = formatTime(pointer.end_time);
             }
             let pointerTimeEndColumnWrapper = $("<div>", {
                 class: "pointer-end col-md-5 table-col"

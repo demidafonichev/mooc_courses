@@ -73,6 +73,7 @@ def save_course(request):
             slide_number=check_point_data["slide_number"]
         )
 
+    print(course_data["pointers"][0])
     # Save pointers
     for pointer_data in course_data["pointers"]:
         pointer = Pointer.objects.create(
@@ -80,7 +81,7 @@ def save_course(request):
             start_time=pointer_data["start_time"],
             end_time=pointer_data["end_time"]
         )
-        for point_data in pointer["points"]:
+        for point_data in pointer_data["points"]:
             point = Point.objects.create(
                 pointer=pointer,
                 left=point_data["left"],

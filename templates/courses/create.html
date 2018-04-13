@@ -2,13 +2,13 @@
 {% load static %}
 {% block content %}
     <div class="container">
-        <h1 class="my-4">Create course</h1>
+        <h1 class="my-4">Создать курс</h1>
         <div class="form-group">
-            <label for="title">Title</label>
+            <label for="title">Название</label>
             <input id="title" class="form-control">
         </div>
         <div class="form-group">
-            <label for="description">Description</label>
+            <label for="description">Описание</label>
             <textarea id="description" class="form-control" rows="4"></textarea>
         </div>
 
@@ -21,7 +21,7 @@
             <input id="audio-input" type="file"/>
         </div>
 
-        <h2 class="my-4" id="cover-label">Course cover</h2>
+        <h2 class="my-4" id="cover-label">Обложка курса</h2>
         <div class="cover-wrapper">
             <div id="course-cover" class="img-fluid"></div>
             {#            <img id="course-cover" class="img-fluid" src="" alt="">#}
@@ -73,7 +73,7 @@
             <div class="dropdown">
                 <button id="choose-slide-button" class="btn btn-secondary dropdown-toggle" type="button"
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Choose slide
+                    Выбрать слайд
                 </button>
                 <div id="slide-list" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                 </div>
@@ -82,12 +82,12 @@
         <button id="pointer-button" class="btn btn-dark">Указатель</button>
         <div class="row">
             <div class="col-md-8 col-sm-8 mb-4">
-                <h3 class="my-4" id="slides-label">All slides</h3>
+                <h3 class="my-4" id="slides-label">Все слайды</h3>
                 <div class="row" id="images">
                 </div>
             </div>
             <div class="col-md-4 col-sm-4 mb-4 checkpoints-wrapper" id="checkpoints-wrapper">
-                <h3 class="my-4" id="checkpoints-label">Checkpoints</h3>
+                <h3 class="my-4" id="checkpoints-label">Контрольные точки</h3>
                 <div id="checkpoints-list">
                 </div>
                 <h3 class="my-4" id="pointers-label">Указатели</h3>
@@ -95,7 +95,7 @@
                 </div>
             </div>
         </div>
-        <button id="save" class="btn btn-dark" type="submit">Save</button>
+        <button id="save" class="btn btn-dark" type="submit">Сохранить</button>
     </div><!-- /.container -->
 
     <script>

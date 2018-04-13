@@ -340,13 +340,16 @@
         $("#course-cover").mousedown(function (e) {
             if (pointClicked) {
                 pointing = true;
-                let offset = $("#course-cover").offset();
+                let courseCover = $("#course-cover");
+                let offset = courseCover.offset();
+                let left = (e.pageX - offset.left) / courseCover.width() * 100;
+                let top = (e.pageY - offset.top) / courseCover.height() * 100;
                 pointer = {
                     start_time: player.currentTime,
                     points: [{
                         time: player.currentTime,
-                        left: e.pageX - offset.left,
-                        top: e.pageY - offset.top
+                        left: left,
+                        top: top
                     }]
                 }
             }
@@ -354,11 +357,14 @@
 
         $("#course-cover").mousemove(function (e) {
             if (pointing) {
-                let offset = $("#course-cover").offset();
+                let courseCover = $("#course-cover");
+                let offset = courseCover.offset();
+                let left = (e.pageX - offset.left) / courseCover.width() * 100;
+                let top = (e.pageY - offset.top) / courseCover.height() * 100;
                 pointer.points.push({
                     time: player.currentTime,
-                    left: e.pageX - offset.left,
-                    top: e.pageY - offset.top
+                    left: left,
+                    top: top
                 });
             }
         });

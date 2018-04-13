@@ -169,6 +169,8 @@
         let currentSlideshowSlideNumber;
 
         $("#play-course").click(function () {
+            console.log(pointers);
+
             currentSlideshowSlideNumber = 0;
             updateCommentList(currentSlideshowSlideNumber);
 
@@ -323,6 +325,7 @@
         }
 
         player.addEventListener('timeupdate', updateSlideIfNeed);
+        player.addEventListener('timeupdate', addPointerIfNeed);
 
         function updateSlideIfNeed() {
             let currentTime = player.currentTime;
@@ -334,6 +337,22 @@
 
                     $("#slideshow").attr("src", nextSlide.image);
                     break;
+                }
+            }
+        }
+        function addPointerIfNeed() {
+            let currentTime = player.currentTime;
+            for (let i = 0; i < pointers.length; ++i) {
+                let pointer = pointers[i];
+                if (currentTime > pointer.start_time &&
+                    currentTime < pointer.end_time) {
+                    for (let i = 0; i < pointer.points.length; ++i) {
+                        let point = pointer.points[i];
+                        if (currentTime > point.time) {
+                            console.log("*");
+                            break;
+                        }
+                    }
                 }
             }
         }

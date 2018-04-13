@@ -303,26 +303,16 @@
             pointClicked = true;
         });
 
-        $("#course-cover").click(function () {
+        $("#course-cover").mousedown(function () {
             if (pointClicked) {
-                if (!pointing) {
-                    pointing = true;
-                    pointer = {
-                        startTime: player.currentTime,
-                        points: [{
-                            time: player.currentTime,
-                            x: 1,
-                            y: 2
-                        }]
-                    }
-                } else {
-                    pointClicked = false;
-                    pointing = false;
-                    pointer.endTime = player.currentTime;
-
-                    pointers.push(pointer);
-                    console.log(pointer);
-                    console.log(pointers);
+                pointing = true;
+                pointer = {
+                    startTime: player.currentTime,
+                    points: [{
+                        time: player.currentTime,
+                        x: 1,
+                        y: 2
+                    }]
                 }
             }
         });
@@ -337,6 +327,17 @@
             }
         });
 
+        $(document).mouseup(function () {
+            if (pointing) {
+                pointClicked = false;
+                pointing = false;
+                pointer.endTime = player.currentTime;
+                pointers.push(pointer);
+                console.log(pointer);
+                console.log(pointers);
+            }
+        });
+
         $("#next-slide-button").click(function () {
             if (currentSlideshowSlideNumber !== slides.length - 1) {
                 currentSlideshowSlideNumber++;
@@ -347,13 +348,11 @@
                 }
                 checkPoints.push(checkPoint);
 
-                {#console.log(currentSlideshowSlideNumber);#}
                 let nextSlide = $.grep(slides, function (e) {
                     return e.number === currentSlideshowSlideNumber;
                 })[0];
-                {#console.log(nextSlide);#}
-                $("#course-cover").css("backgroundImage", nextSlide.data);
 
+                $("#course-cover").css("backgroundImage", nextSlide.data);
                 addCheckPointToCheckpointsList(checkPoint);
             }
         });

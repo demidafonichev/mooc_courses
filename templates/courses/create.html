@@ -131,6 +131,7 @@
             $("#audio-player").hide();
             $("#slide-controllers").hide();
             $("#pointers-label").hide();
+            $("#pointers-list").hide();
         });
 
         $(window).resize(function () {
@@ -272,7 +273,9 @@
                 $("#checkpoints-label").show();
                 $("#checkpoints-list").show();
                 $("#pointers-label").show();
+                $("#pointers-list").show();
                 fillCheckPointsList();
+                fillPointersList();
             }
             console.log(slides);
         });
@@ -304,7 +307,9 @@
                 $("#checkpoints-label").show();
                 $("#checkpoints-list").show();
                 $("#pointers-label").show();
+                $("#pointers-list").show();
                 fillCheckPointsList();
+                fillPointersList();
             }
         });
 
@@ -342,6 +347,7 @@
                 pointing = false;
                 pointer.endTime = player.currentTime;
                 pointers.push(pointer);
+                addPointerToPointersList(pointer, false);
                 console.log(pointer);
                 console.log(pointers);
             }
@@ -447,6 +453,82 @@
 
             let checkPointList = $("#checkpoints-list");
             checkPointList.append(checkpointRowWrapper);
+        }
+
+        function fillPointersList() {
+            $("#pointers-list").empty();
+            addPointerToPointersList({}, true);
+            addPointerToPointersList(pointers[0], false);
+            console.log(pointers.length);
+            for (let i = 1; i < pointers.length; ++i) {
+                addPointerToPointersList(pointers[i], false);
+            }
+        }
+
+        function addPointerToPointersList(pointer, head) {
+            let rowClass;
+            if (head) {
+                rowClass = "row table-row table-head margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
+            } else {
+                rowClass = "row table-row margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
+            }
+
+            let pointerRowWrapper = $("<div>", {
+                class: rowClass
+            });
+            let pointerTimeStartColumnWrapper = $("<div>", {
+                class: "col-md-3 table-col"
+            });
+
+            let pointerTimeStart;
+            if (head) {
+                pointerTimeStart = "Время начала";
+            } else {
+                pointerTimeStart = formatTime(pointer.startTime);
+            }
+
+            let pointerTimeStartCellWrapper = $("<div>", {
+                class: "cell",
+                text: pointerTimeStart
+            });
+            pointerTimeStartColumnWrapper.append(pointerTimeStartCellWrapper);
+            pointerRowWrapper.append(pointerTimeStartColumnWrapper);
+
+
+            let pointerTimeEnd;
+            if (head) {
+                pointerTimeEnd = "Время конца";
+            } else {
+                pointerTimeEnd = formatTime(pointer.endTime);
+            }
+            let pointerTimeEndColumnWrapper = $("<div>", {
+                class: "col-md-3 table-col"
+            });
+
+            let pointerTimeEndCellWrapper = $("<div>", {
+                class: "cell",
+                text: pointerTimeEnd
+            });
+            pointerTimeEndColumnWrapper.append(pointerTimeEndCellWrapper);
+            pointerRowWrapper.append(pointerTimeEndColumnWrapper);
+
+            if (!head) {
+                let deletePointerButton = $("<button>", {
+                    class: "close delete-pointer",
+                    type: "button",
+                    html: "<span aria-hidden=\"true\">&times;</span>"
+                });
+                pointerRowWrapper.append(deletePointerButton);
+                deletePointerButton.click(function () {
+                    let i = pointers.indexOf(pointer);
+                    pointers.splice(i, 1);
+
+                    fillPointersList();
+                });
+            }
+
+            let pointerList = $("#pointers-list");
+            pointerList.append(pointerRowWrapper);
         }
 
         $("#save").click(function () {

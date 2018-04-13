@@ -317,26 +317,28 @@
             pointClicked = true;
         });
 
-        $("#course-cover").mousedown(function () {
+        $("#course-cover").mousedown(function (e) {
             if (pointClicked) {
                 pointing = true;
+                let offset = $("#course-cover").offset();
                 pointer = {
                     startTime: player.currentTime,
                     points: [{
                         time: player.currentTime,
-                        x: 1,
-                        y: 2
+                        left: e.pageX - offset.left,
+                        top: e.pageY - offset.top
                     }]
                 }
             }
         });
 
-        $("#course-cover").mousemove(function () {
+        $("#course-cover").mousemove(function (e) {
             if (pointing) {
+                let offset = $("#course-cover").offset();
                 pointer.points.push({
                     time: player.currentTime,
-                    x: 1,
-                    y: 2
+                    left: e.pageX - offset.left,
+                    top: e.pageY - offset.top
                 });
             }
         });
@@ -397,10 +399,7 @@
                 class: rowClass
             });
             let checkpointTimeColumnWrapper = $("<div>", {
-                class: "col-md-3 table-col"
-            });
-            let checkpointSlideColumnWrapper = $("<div>", {
-                class: "col-md-3 table-col"
+                class: "checkpoint-time col-md-3 table-col"
             });
 
             let checkPointTime;
@@ -429,6 +428,9 @@
                 console.log(slide);
             }
 
+            let checkpointSlideColumnWrapper = $("<div>", {
+                class: "checkpoint-slide col-md-8 table-col"
+            });
             let checkpointSlideCellWrapper = $("<div>", {
                 class: "cell",
                 text: checkPointSlideName
@@ -438,7 +440,7 @@
 
             if (!head && !firstSlide) {
                 let deleteCheckpointButton = $("<button>", {
-                    class: "close delete-checkpoint",
+                    class: "close delete-checkpoint col-md-1",
                     type: "button",
                     html: "<span aria-hidden=\"true\">&times;</span>"
                 });
@@ -458,9 +460,8 @@
         function fillPointersList() {
             $("#pointers-list").empty();
             addPointerToPointersList({}, true);
-            addPointerToPointersList(pointers[0], false);
             console.log(pointers.length);
-            for (let i = 1; i < pointers.length; ++i) {
+            for (let i = 0; i < pointers.length; ++i) {
                 addPointerToPointersList(pointers[i], false);
             }
         }
@@ -477,7 +478,7 @@
                 class: rowClass
             });
             let pointerTimeStartColumnWrapper = $("<div>", {
-                class: "col-md-3 table-col"
+                class: "pointer-start col-md-5 table-col"
             });
 
             let pointerTimeStart;
@@ -502,7 +503,7 @@
                 pointerTimeEnd = formatTime(pointer.endTime);
             }
             let pointerTimeEndColumnWrapper = $("<div>", {
-                class: "col-md-3 table-col"
+                class: "pointer-end col-md-5 table-col"
             });
 
             let pointerTimeEndCellWrapper = $("<div>", {
@@ -514,7 +515,7 @@
 
             if (!head) {
                 let deletePointerButton = $("<button>", {
-                    class: "close delete-pointer",
+                    class: "close delete-pointer col-md-2",
                     type: "button",
                     html: "<span aria-hidden=\"true\">&times;</span>"
                 });
@@ -537,6 +538,7 @@
             course.slides = slides;
             course.audio = audioFile;
             course.check_points = checkPoints;
+            course.pointers = pointers;
             console.log(checkPoints);
 
             let formData = new FormData();

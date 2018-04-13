@@ -220,7 +220,8 @@ body {
 .delete-checkpoint, .delete-pointer {
     position: absolute;
     right: 0;
-    margin-right: 1rem;
+    margin-right: 0.3rem;
+    width: 10%;
 }
 
 #choose-slide-button {
@@ -228,4 +229,16 @@ body {
     border-bottom-left-radius: 0;
     background-color: #343a40;
     border: 0;
+}
+
+.checkpoint-time {
+    width: 30%;
+}
+
+.checkpoint-slide {
+    width: 60%;
+}
+
+.pointer-start, .pointer-end {
+    width: 45%;
 }

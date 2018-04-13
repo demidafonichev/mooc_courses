@@ -31,6 +31,7 @@ def create_course(request):
 
 def save_course(request):
     course_data = ast.literal_eval(request.POST["course"])
+    print(course_data["pointers"])
     author = User.objects.get(username=request.user.username)
 
     course = Course.objects.create(

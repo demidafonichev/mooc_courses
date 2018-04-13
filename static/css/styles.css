@@ -242,3 +242,7 @@ body {
 .pointer-start, .pointer-end {
     width: 45%;
 }
+
+#slide-controllers {
+    float: right;
+}

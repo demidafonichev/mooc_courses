@@ -67,8 +67,8 @@
                     <source id="audio-source" src="" type="audio/mpeg">
                 </audio>
             </div>
+            <button id="pointer-button" class="btn btn-dark">Указатель</button>
             <div id="slide-controllers" class="btn-group">
-                <button id="pointer-button" class="btn btn-dark">Указатель</button>
                 <button id="next-slide-button" class="btn btn-dark">Следующий слайд</button>
                 <div class="dropdown">
                     <button id="choose-slide-button" class="btn btn-secondary dropdown-toggle" type="button"
@@ -126,10 +126,15 @@
         $(document).ready(function () {
             $("#cover-label").hide();
             $("#slides-label").hide();
+
             $("#checkpoints-label").hide();
             $("#checkpoints-list").hide();
+
             $("#audio-player").hide();
+
             $("#slide-controllers").hide();
+            $("#pointer-button").hide();
+
             $("#pointers-label").hide();
             $("#pointers-list").hide();
         });
@@ -264,14 +269,17 @@
             }
 
             if (!$("#audio-input").is(":visible")) {
-                $("#slide-controllers").show();
                 checkPoints.push({
                     number: 0,
                     time: 0,
                     slide_number: currentSlideshowSlideNumber
                 });
+                $("#slide-controllers").show();
+                $("#pointer-button").show();
+
                 $("#checkpoints-label").show();
                 $("#checkpoints-list").show();
+
                 $("#pointers-label").show();
                 $("#pointers-list").show();
                 fillCheckPointsList();
@@ -298,14 +306,17 @@
             $("#audio-player").show();
 
             if (!$("#presentation-input").is(":visible")) {
-                $("#slide-controllers").show();
                 checkPoints.push({
                     number: 0,
                     time: 0,
                     slide_number: currentSlideshowSlideNumber
                 });
+                $("#slide-controllers").show();
+                $("#pointer-button").show();
+
                 $("#checkpoints-label").show();
                 $("#checkpoints-list").show();
+
                 $("#pointers-label").show();
                 $("#pointers-list").show();
                 fillCheckPointsList();

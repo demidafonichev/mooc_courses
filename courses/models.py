@@ -150,6 +150,10 @@ class Point(models.Model):
         help_text=_("Pointer point"),
         on_delete=models.CASCADE
     )
+    time = models.FloatField(
+        default=.0,
+        help_text=_("Point time")
+    )
     left = models.FloatField(
         default=.0,
         help_text=_("Coordinate from left")

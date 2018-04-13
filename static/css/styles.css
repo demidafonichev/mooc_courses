@@ -243,6 +243,10 @@ body {
     width: 45%;
 }
 
-#slide-controllers {
-    float: right;
+#pointer-button {
+    margin-left: 10px;
+}
+
+.controllers {
+    width: 100%;
 }

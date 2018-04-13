@@ -33,7 +33,7 @@
         {% if author.username == request.user.username %}
             <div class="modal-footer">
                 <a href="{% url "delete_course" course_id=course.id %}">
-                    <button id="delete" class="btn btn-outline-dark" type="submit">Редактировать</button>
+                    <button id="change" class="btn btn-outline-dark" type="submit">Редактировать</button>
                 </a>
                 <a href="{% url "delete_course" course_id=course.id %}">
                     <button id="delete" class="btn btn-dark" type="submit">Удалить</button>
@@ -121,7 +121,9 @@
         {% autoescape off %}
             let slideList = [];
             let checkPoints = [];
+            let pointers = [];
             let comments;
+            let points;
             {% for slide in slides %}
                 comments = [];
                 {% for comment in slide.comments %}
@@ -145,6 +147,21 @@
                     number: {{ checkPoint.number }},
                     time: {{ checkPoint.time }},
                     slideNumber: {{ checkPoint.number }}
+                });
+            {% endfor %}
+            {% for pointer in pointers %}
+                points = []
+                {% for point in pointer.points %}
+                    points.push({
+                        time: {{ point.time }},
+                        left: {{ point.left }},
+                        top: {{ point.top }}
+                    });
+                {% endfor %}
+                pointers.push({
+                    start_time: {{ pointer.start_time }},
+                    end_time: {{ pointer.end_time }},
+                    points: points
                 });
             {% endfor %}
         {% endautoescape %}

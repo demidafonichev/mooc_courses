@@ -73,7 +73,6 @@ def save_course(request):
             slide_number=check_point_data["slide_number"]
         )
 
-    print(course_data["pointers"][0])
     # Save pointers
     for pointer_data in course_data["pointers"]:
         pointer = Pointer.objects.create(
@@ -84,6 +83,7 @@ def save_course(request):
         for point_data in pointer_data["points"]:
             point = Point.objects.create(
                 pointer=pointer,
+                time=point_data["time"],
                 left=point_data["left"],
                 top=point_data["top"]
             )
@@ -94,13 +94,8 @@ def save_course(request):
 def get_course(request, course_id):
     course = Course.objects.get(pk=course_id)
     author = course.author
-    slides = []
-    check_points = []
-    for check_point in CheckPoint.objects.filter(course=course):
-        check_points.append({"number": check_point.number,
-                             "time": check_point.time,
-                             "slide_number": check_point.slide_number})
 
+    slides = []
     for slide in Slide.objects.filter(course=course):
         comments = []
         for comment in Comment.objects.filter(slide=slide):
@@ -116,10 +111,32 @@ def get_course(request, course_id):
                        "image": slide.image,
                        "comments": comments})
 
+    check_points = []
+    for check_point in CheckPoint.objects.filter(course=course):
+        check_points.append({"number": check_point.number,
+                             "time": check_point.time,
+                             "slide_number": check_point.slide_number})
+
+    pointers = []
+    for pointer in Pointer.objects.filter(course=course):
+        points = []
+        for point in Point.objects.filter(pointer=pointer):
+            points.append({
+                "time": point.time,
+                "left": point.left,
+                "top": point.top
+            })
+        pointers.append({
+            "start_time": pointer.start_time,
+            "end_time": pointer.end_time,
+            "points": points
+        })
+
     return render(request, "courses/course.html", {"course": course,
                                                    "author": author,
                                                    "slides": slides,
-                                                   "check_points": check_points})
+                                                   "check_points": check_points,
+                                                   "pointers": pointers})
 
 
 def delete_course(request, course_id):

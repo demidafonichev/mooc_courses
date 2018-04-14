@@ -68,7 +68,6 @@
         let audioFile = {};
         let checkPoints = [];
         let pointers = [];
-        let currentSlideshowSlideNumber = 0;
         let pointClicked;
         let pointing;
         let pointer;
@@ -94,7 +93,7 @@
             for (let i = 0; i < slideList.length; ++i) {
                 let fileReader = new FileReader();
                 fileReader.onload = function () {
-                    slideList[i].data = fileReader.result;
+                    slideList[i].image = fileReader.result;
                     check();
                 };
                 fileReader.readAsDataURL(slideList[i].raw);
@@ -103,7 +102,7 @@
             function check() {
                 let ready = true;
                 slideList.forEach(function (e) {
-                    if (!e.data) ready = false;
+                    if (!e.image) ready = false;
                 });
 
                 if (ready) done();
@@ -121,9 +120,9 @@
                     addSlideToChooseList(e);
                 });
 
-                getImageSize(slideList[0].data);
+                getImageSize(slideList[0].image);
                 resizePresentationImageDiv();
-                presentationPlayerImage.css("background-image", "url(" + slideList[0].data + ")")
+                presentationPlayerImage.css("background-image", "url(" + slideList[0].image + ")")
             }
 
             if (!$("#audio-input").is(":visible")) {
@@ -259,7 +258,7 @@
                     return e.number === currentSlideshowSlideNumber;
                 })[0];
 
-                presentationPlayerImage.css("backgroundImage", "url(" + nextSlide.data + ")");
+                presentationPlayerImage.css("backgroundImage", "url(" + nextSlide.image + ")");
                 fillCheckPointsList();
             }
         });

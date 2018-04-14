@@ -33,14 +33,18 @@
         let checkPoints = {{ check_points|safe }};
         let pointers = {{ pointers|safe }};
 
-        fillCheckPointsList();
-        fillPointersList();
+        $(document).ready(function () {
+            fillCheckPointsList();
+            fillPointersList();
 
-        slideList.forEach(function(slide) {
-            addSlideToChooseList(slide);
+            slideList.forEach(function (slide) {
+                addSlideToChooseList(slide);
+            });
+
+            console.log(slideList);
         });
 
-        $("#save").click(function() {
+        $("#save").click(function () {
             console.log(checkPoints);
             console.log(pointers);
         });

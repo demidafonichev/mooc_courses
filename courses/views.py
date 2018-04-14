@@ -72,7 +72,7 @@ def save_course(request):
 
     # Save slides data
     for slide_data in course_data["slides"]:
-        f, image_data = slide_data["data"].split(";base64,")
+        f, image_data = slide_data["image"].split(";base64,")
         ext = "." + f.split("/")[-1]
         image = ContentFile(base64.b64decode(image_data))
 
@@ -80,7 +80,7 @@ def save_course(request):
             course=course,
             number=slide_data["number"],
             name=slide_data["name"],
-            image=slide_data["data"].split(",")[1]
+            image=slide_data["image"].split(",")[1]
         )
         slide.image.save(
             "".join(["slide", str(slide.id), "_image", str(slide_data["number"]), ext]),
@@ -179,7 +179,6 @@ def get_course(request, course_id):
 
 def change_course_page(request, course_id):
     course_data = get_course_data(course_id)
-    print(course_data["check_points"])
     return render(request, "courses/change.html", course_data)
 
 

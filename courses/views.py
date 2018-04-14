@@ -17,10 +17,12 @@ def courses_catalog(request):
     courses = []
     for course in Course.objects.all():
         cover = Slide.objects.get(course=course, number=0)
-        courses.append({"id": course.id,
-                        "title": course.title,
-                        "description": course.description,
-                        "cover": cover.image.url})
+        courses.append({
+            "id": course.id,
+            "title": course.title,
+            "description": course.description,
+            "cover": cover.image.url
+        })
 
     return render(request, "courses/catalog.html", {"courses": courses})
 
@@ -31,13 +33,17 @@ def search_course(request):
     courses = []
     for course in Course.objects.filter(title__startswith=search_text):
         cover = Slide.objects.get(course=course, number=0)
-        courses.append({"id": course.id,
-                        "title": course.title,
-                        "description": course.description,
-                        "cover": cover.image.url})
+        courses.append({
+            "id": course.id,
+            "title": course.title,
+            "description": course.description,
+            "cover": cover.image.url
+        })
 
     return HttpResponse(status=status.HTTP_200_OK,
-                        content=json.dumps({"courses": courses}),
+                        content=json.dumps({
+                            "courses": courses
+                        }),
                         content_type="application/json")
 
 

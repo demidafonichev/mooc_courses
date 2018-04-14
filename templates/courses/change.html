@@ -1,6 +1,44 @@
 {% extends "base.html" %}
 {% block content %}
+    <div class="container">
+        <h1 class="my-4">Изменить курс</h1>
+        <div class="form-group">
+            <label for="title">Название</label>
+            <input id="title" class="form-control" value="{{ course.title }}">
+        </div>
+        <div class="form-group">
+            <label for="description">Описание</label>
+            <textarea id="description" class="form-control" rows="4">{{ course.description }}</textarea>
+        </div>
 
+        <h2 class="my-4" id="current-image">Текущий слайд</h2>
+        {% include "courses/presentation-player.html" %}
+        <div id="slide-controllers" class="btn-group">
+            <button id="next-slide-button" class="btn btn-dark">Следующий слайд</button>
+            <div class="dropdown">
+                <button id="choose-slide-button" class="btn btn-secondary dropdown-toggle" type="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Выбрать слайд
+                </button>
+                <div id="slide-list" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                </div>
+            </div>
+        </div>
+        <button id="pointer-button" class="btn btn-dark">Указатель</button>
+        <div class="row">
+            <div class="col-md-8 col-sm-8 mb-4">
+                <h3 class="my-4" id="slides-label">Все слайды</h3>
+                {% include "courses/slides_panel.html" %}
+            </div>
+            <div class="col-md-4 col-sm-4 mb-4 checkpoints-wrapper" id="checkpoints-wrapper">
+                <h3 class="my-4" id="checkpoints-label">Контрольные точки</h3>
+                {% include "courses/checkpoints_list.html" %}
+                <h3 class="my-4" id="pointers-label">Указатели</h3>
+                {% include "courses/pointers_list.html" %}
+            </div>
+        </div>
+        <button id="save" class="btn btn-dark" type="submit">Сохранить</button>
+    </div><!-- /.container -->
 
     <script>
         {% autoescape off %}
@@ -10,19 +48,16 @@
             let comments;
             let points;
 
-            let imageHeight;
-            let imageWidth;
-
             {% for slide in slides %}
                 comments = [];
                 {% for comment in slide.comments %}
                     comments.push({
                         id: {{ comment.id }},
-                        slideID: {{ comment.slide_id }},
-                        authorID: {{ comment.author_id }},
-                        authorName: "{{ comment.author_name }}",
+                        slide_id: {{ comment.slide_id }},
+                        author_id: {{ comment.author_id }},
+                        author_name: "{{ comment.author_name }}",
                         text: "{{ comment.text }}"
-                    })
+                    });
                 {% endfor %}
                 slideList.push({
                     id: {{ slide.id }},
@@ -35,7 +70,8 @@
                 checkPoints.push({
                     number: {{ checkPoint.number }},
                     time: {{ checkPoint.time }},
-                    slideNumber: {{ checkPoint.number }}
+                    slide_name: "{{ checkPoint.slide_name }}",
+                    slide_number: {{ checkPoint.slide_number }}
                 });
             {% endfor %}
             {% for pointer in pointers %}
@@ -54,12 +90,10 @@
                 });
             {% endfor %}
 
-            let image = new Image();
-            image.src = "{{ slides.0.image }}";
-            image.onload = function () {
-                imageWidth = image.naturalWidth;
-                imageHeight = image.naturalHeight;
-            };
+            getImageSize("{{ slideList.0.image }}");
+
+            fillCheckPointsList();
+            fillPointersList();
         {% endautoescape %}
     </script>
 {% endblock %}

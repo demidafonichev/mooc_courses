@@ -54,10 +54,6 @@ body {
     border-radius: 0;
 }
 
-#slideshow-image {
-    background-size: 100%;
-}
-
 .comment-list {
     padding: 0rem 1.4rem 0rem 1.4rem;
     background-color: #ffffff !important;

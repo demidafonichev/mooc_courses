@@ -50,6 +50,11 @@ class Slide(models.Model):
         default=0,
         help_text=_("Slide number")
     )
+    name = models.CharField(
+        max_length=100,
+        default="",
+        help_text=_("Slide name")
+    )
     image = models.ImageField(
         upload_to=MEDIA_ROOT,
         help_text=_("Slide image")
@@ -106,6 +111,11 @@ class CheckPoint(models.Model):
     time = models.FloatField(
         default=.0,
         help_text=_("Check point time in seconds")
+    )
+    slide_name = models.CharField(
+        max_length=100,
+        default="",
+        help_text=_("Slide name")
     )
     slide_number = models.IntegerField(
         default=0,

@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load static %}
 {% block content %}
     <div class="container">
         <h1 class="my-4">{{ course.title }}</h1>
@@ -32,7 +31,7 @@
 
         {% if author.username == request.user.username %}
             <div class="modal-footer">
-                <a href="{% url "delete_course" course_id=course.id %}">
+                <a href="{% url "change_course_page" course_id=course.id %}">
                     <button id="change" class="btn btn-outline-dark" type="submit">Редактировать</button>
                 </a>
                 <a href="{% url "delete_course" course_id=course.id %}">
@@ -60,10 +59,7 @@
         </div>
     </div>
 
-    <script src="{% static "js/audio-player.js" %}"></script>
     <script>
-        let presentationPlayerImage = $("#presentation-player-image");
-
         {% autoescape off %}
             let slideList = [];
             let checkPoints = [];
@@ -71,19 +67,16 @@
             let comments;
             let points;
 
-            let imageHeight;
-            let imageWidth;
-
             {% for slide in slides %}
                 comments = [];
                 {% for comment in slide.comments %}
                     comments.push({
                         id: {{ comment.id }},
-                        slideID: {{ comment.slide_id }},
-                        authorID: {{ comment.author_id }},
-                        authorName: "{{ comment.author_name }}",
+                        slide_id: {{ comment.slide_id }},
+                        author_id: {{ comment.author_id }},
+                        author_name: "{{ comment.author_name }}",
                         text: "{{ comment.text }}"
-                    })
+                    });
                 {% endfor %}
                 slideList.push({
                     id: {{ slide.id }},
@@ -96,7 +89,7 @@
                 checkPoints.push({
                     number: {{ checkPoint.number }},
                     time: {{ checkPoint.time }},
-                    slideNumber: {{ checkPoint.number }}
+                    slide_number: {{ checkPoint.number }}
                 });
             {% endfor %}
             {% for pointer in pointers %}
@@ -115,26 +108,17 @@
                 });
             {% endfor %}
 
-            let image = new Image();
-            image.src = "{{ slides.0.image }}";
-            image.onload = function () {
-                imageWidth = image.naturalWidth;
-                imageHeight = image.naturalHeight;
-            };
+            getImageSize("{{ slides.0.image }}");
         {% endautoescape %}
 
         $(window).resize(function () {
-            resizeSlideshowImageDiv();
+            resizePresentationImageDiv();
         });
-
-        function resizeSlideshowImageDiv() {
-            let slideshowImageWidth = presentationPlayerImage.width();
-            presentationPlayerImage.height(slideshowImageWidth * imageHeight / imageWidth);
-        }
 
         let currentSlideshowSlideNumber;
 
         $("#play-course").click(function () {
+            console.log(checkPoints);
             console.log(pointers);
 
             currentSlideshowSlideNumber = 0;
@@ -148,7 +132,7 @@
 
             $("#slideshow-modal").modal();
 
-            resizeSlideshowImageDiv();
+            resizePresentationImageDiv();
             presentationPlayerImage.css("background-image", "url({{ slides.0.image }})");
         });
 
@@ -199,7 +183,7 @@
 
             $("#slideshow-modal").modal();
 
-            resizeSlideshowImageDiv();
+            resizePresentationImageDiv();
         });
 
         $("#slideshow-modal").on("hidden.bs.modal", function () {
@@ -234,8 +218,8 @@
                         let comment = {
                             id: commentData.id,
                             slideID: commentData.slide_id,
-                            authorID: commentData.author_id,
-                            authorName: commentData.author_name,
+                            author_id: commentData.author_id,
+                            author_name: commentData.author_name,
                             text: commentData.text
                         }
 
@@ -280,7 +264,7 @@
             let commentWrapper = $("<div>", {class: "media-body"})
             let commentAuthor = $("<div>", {
                 class: "mt-0 commenter-name",
-                text: comment.authorID === -1 ? "Anonymous" : comment.authorName
+                text: comment.author_id === -1 ? "Anonymous" : comment.author_name
             })
             let commentText = $("<div>", {
                 class: "comment",
@@ -295,26 +279,8 @@
             commentList.append(commentBlockWrapper);
         }
 
-        player.addEventListener('timeupdate', updateSlideIfNeed);
-
         for (let i = 0; i < 4; ++i) {
             player.addEventListener('timeupdate', addPointerIfNeed);
-        }
-
-
-        function updateSlideIfNeed() {
-            let currentTime = player.currentTime;
-            for (let i = checkPoints.length - 1; i >= 0; --i) {
-                if (checkPoints[i].time < currentTime) {
-                    let nextSlide = $.grep(slideList, function (e) {
-                        return e.number === checkPoints[i].slideNumber;
-                    })[0];
-
-                    resizeSlideshowImageDiv();
-                    presentationPlayerImage.css("background-image", "url(" + nextSlide.image + ")");
-                    break;
-                }
-            }
         }
 
         function addPointerIfNeed() {

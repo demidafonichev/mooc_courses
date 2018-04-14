@@ -1,4 +1,14 @@
 <div class="row" id="images">
+    {% if slides %}
+        {% for slide in slides %}
+            <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
+                <div class="card h-100">
+                    <img class="card-img-top" src="{{ slide.image }}">
+                    <div class="slide-name">{{ slide.name }}</div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
 </div>
 
 <script>

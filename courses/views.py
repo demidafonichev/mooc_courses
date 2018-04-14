@@ -79,6 +79,7 @@ def save_course(request):
         slide = Slide.objects.create(
             course=course,
             number=slide_data["number"],
+            name=slide_data["name"],
             image=slide_data["data"].split(",")[1]
         )
         slide.image.save(
@@ -92,6 +93,7 @@ def save_course(request):
             course=course,
             number=check_point_data["number"],
             time=check_point_data["time"],
+            slide_name=check_point_data["slide_name"],
             slide_number=check_point_data["slide_number"]
         )
 
@@ -113,7 +115,7 @@ def save_course(request):
     return HttpResponse(status=status.HTTP_200_OK)
 
 
-def get_course(request, course_id):
+def get_course_data(course_id):
     course = Course.objects.get(pk=course_id)
     author = course.author
 
@@ -131,6 +133,7 @@ def get_course(request, course_id):
         slides.append({
             "id": slide.pk,
             "number": slide.number,
+            "name": slide.name,
             "image": slide.image.url,
             "comments": comments
         })
@@ -141,6 +144,7 @@ def get_course(request, course_id):
             "id": check_point.id,
             "number": check_point.number,
             "time": check_point.time,
+            "slide_name": check_point.slide_name,
             "slide_number": check_point.slide_number
         })
 
@@ -161,11 +165,26 @@ def get_course(request, course_id):
             "points": points
         })
 
-    return render(request, "courses/course.html", {"course": course,
-                                                   "author": author,
-                                                   "slides": slides,
-                                                   "check_points": check_points,
-                                                   "pointers": pointers})
+    return {"course": course,
+            "author": author,
+            "slides": slides,
+            "check_points": check_points,
+            "pointers": pointers}
+
+
+def get_course(request, course_id):
+    course_data = get_course_data(course_id)
+    return render(request, "courses/course.html", course_data)
+
+
+def change_course_page(request, course_id):
+    course_data = get_course_data(course_id)
+    print(course_data["check_points"])
+    return render(request, "courses/change.html", course_data)
+
+
+def change_course(request, course_id):
+    pass
 
 
 def delete_course(request, course_id):

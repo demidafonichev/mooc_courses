@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load static %}
 {% block content %}
     <div class="container">
         <h1 class="my-4">Создать курс</h1>
@@ -21,7 +20,7 @@
             <input id="audio-input" type="file"/>
         </div>
 
-        <h2 class="my-4" id="cover-label">Текущий слайд</h2>
+        <h2 class="my-4" id="current-image-label">Текущий слайд</h2>
         {% include "courses/presentation-player.html" %}
         <div id="slide-controllers" class="btn-group">
             <button id="next-slide-button" class="btn btn-dark">Следующий слайд</button>
@@ -51,10 +50,8 @@
     </div><!-- /.container -->
 
     <script>
-        let presentationPlayerImage = $("#presentation-player-image");
-
         $(document).ready(function () {
-            $("#cover-label").hide();
+            $("#current-image-label").hide();
             $("#slides-label").hide();
 
             $("#checkpoints-label").hide();
@@ -79,7 +76,7 @@
         }
 
         let course = {};
-        let slides = [];
+        let slideList = [];
         let audioFile = {};
         let checkPoints = [];
         let pointers = [];
@@ -88,38 +85,36 @@
         let pointing;
         let pointer;
 
-        let imageHeight;
-        let imageWidth;
-
         $("#presentation-input").change(function () {
-            slides = [];
+            slideList = [];
             $("#presentation-input-group").hide();
             $("#images").empty();
-            $("#cover-label").show();
+            $("#current-image-label").show();
+            $("#image-box").show();
             $("#slides-label").show();
 
             let selectedFiles = this.files;
 
             for (let i = 0; i < selectedFiles.length; ++i) {
-                slides.push({
+                slideList.push({
                     number: i,
                     name: selectedFiles[i].name,
                     raw: selectedFiles[i]
                 });
             }
 
-            for (let i = 0; i < slides.length; ++i) {
+            for (let i = 0; i < slideList.length; ++i) {
                 let fileReader = new FileReader();
                 fileReader.onload = function () {
-                    slides[i].data = fileReader.result;
+                    slideList[i].data = fileReader.result;
                     check();
                 };
-                fileReader.readAsDataURL(slides[i].raw);
+                fileReader.readAsDataURL(slideList[i].raw);
             }
 
             function check() {
                 let ready = true;
-                slides.forEach(function (e) {
+                slideList.forEach(function (e) {
                     if (!e.data) ready = false;
                 });
 
@@ -127,28 +122,20 @@
             }
 
             function done() {
-                slides.sort(function (a, b) {
+                slideList.sort(function (a, b) {
                     if (a.number > b.number) return 1;
                     if (a.number < b.number) return -1;
                     return 0;
                 });
 
-                slides.forEach(function (e) {
+                slideList.forEach(function (e) {
                     createImageDom(e);
                     addSlideToChooseList(e);
                 });
 
-                let image = new Image();
-                image.src = slides[0].data;
-                image.onload = function () {
-                    imageWidth = image.naturalWidth;
-                    imageHeight = image.naturalHeight;
-                    console.log("(", imageWidth, "; ", imageHeight, ")");
-                    resizeCourseCoverDiv();
-                    presentationPlayerImage.css("background-image", "url(" + slides[0].data + ")");
-                };
-
-                console.log("slides: ", slides);
+                getImageSize(slideList[0].data);
+                resizePresentationImageDiv();
+                presentationPlayerImage.css("background-image", "url(" + slideList[0].data + ")")
             }
 
             function addSlideToChooseList(slide) {
@@ -158,10 +145,12 @@
                 });
                 slideLine.click(function () {
                     currentSlideshowSlideNumber = slide.number;
+                    console.log("choose slide: ", slide);
                     let checkPoint = {
                         number: checkPoints.length,
                         time: player.currentTime,
-                        slide_number: currentSlideshowSlideNumber
+                        slide_name: slide.name,
+                        slide_number: slide.number
                     };
                     checkPoints.push(checkPoint);
                     presentationPlayerImage.css("backgroundImage", "url(" + slide.data + ")");
@@ -183,7 +172,8 @@
                 checkPoints.push({
                     number: 0,
                     time: 0,
-                    slide_number: currentSlideshowSlideNumber
+                    slide_name: slideList[0].name,
+                    slide_number: 0
                 });
                 $("#slide-controllers").show();
                 $("#pointer-button").show();
@@ -196,7 +186,6 @@
                 fillCheckPointsList();
                 fillPointersList();
             }
-            console.log(slides);
         });
 
         $("#audio-input").change(function () {
@@ -220,7 +209,8 @@
                 checkPoints.push({
                     number: 0,
                     time: 0,
-                    slide_number: currentSlideshowSlideNumber
+                    slide_name: slideList[0].name,
+                    slide_number: 0
                 });
                 $("#slide-controllers").show();
                 $("#pointer-button").show();
@@ -284,22 +274,22 @@
                     return 0;
                 });
                 fillPointersList();
-
-                console.log(pointer);
-                console.log(pointers);
             }
         });
 
         $("#next-slide-button").click(function () {
-            if (currentSlideshowSlideNumber !== slides.length - 1) {
+            if (currentSlideshowSlideNumber !== slideList.length - 1) {
                 currentSlideshowSlideNumber++;
+                let slide = $.grep(slideList, function (e) {
+                    return e.number === currentSlideshowSlideNumber;
+                })[0];
                 let checkPoint = {
                     number: checkPoints.length,
                     time: player.currentTime,
+                    slide_name: slide.name,
                     slide_number: currentSlideshowSlideNumber
                 }
                 checkPoints.push(checkPoint);
-                console.log("here");
 
                 checkPoints.sort(function (a, b) {
                     if (a.time > b.time) return 1;
@@ -307,7 +297,7 @@
                     return 0;
                 });
 
-                let nextSlide = $.grep(slides, function (e) {
+                let nextSlide = $.grep(slideList, function (e) {
                     return e.number === currentSlideshowSlideNumber;
                 })[0];
 
@@ -319,10 +309,11 @@
         $("#save").click(function () {
             course.title = $("#title").val();
             course.description = $("#description").val();
-            course.slides = slides;
+            course.slides = slideList;
             course.audio = audioFile;
             course.check_points = checkPoints;
             course.pointers = pointers;
+
             console.log(checkPoints);
 
             let formData = new FormData();
@@ -342,6 +333,5 @@
             });
         });
     </script>
-    <script src="{% static "js/audio-player.js" %}"></script>
 
 {% endblock %}

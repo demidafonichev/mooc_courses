@@ -5,7 +5,6 @@
     function fillPointersList() {
         $("#pointers-list").empty();
         addPointerToPointersList({}, true);
-        console.log(pointers.length);
         for (let i = 0; i < pointers.length; ++i) {
             addPointerToPointersList(pointers[i], false);
         }

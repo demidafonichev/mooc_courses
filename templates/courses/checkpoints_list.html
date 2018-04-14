@@ -3,19 +3,15 @@
 
 <script>
     function fillCheckPointsList() {
-        console.log(checkPoints);
-
         $("#checkpoints-list").empty();
         addCheckPointToCheckpointsList({}, true, false);
         addCheckPointToCheckpointsList(checkPoints[0], false, true);
-        console.log(checkPoints.length);
         for (let i = 1; i < checkPoints.length; ++i) {
             addCheckPointToCheckpointsList(checkPoints[i], false, false);
         }
     }
 
     function addCheckPointToCheckpointsList(checkPoint, head, firstSlide) {
-        console.log(checkPoint, head, firstSlide);
         let rowClass;
         if (head) {
             rowClass = "row table-row table-head margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
@@ -48,12 +44,7 @@
         if (head) {
             checkPointSlideName = "Слайд";
         } else {
-            let checkPointSlideNumber = checkPoint.slide_number;
-            let slide = $.grep(slides, function (e) {
-                return e.number === checkPointSlideNumber;
-            })[0];
-            checkPointSlideName = slide.name;
-            console.log(slide);
+            checkPointSlideName = checkPoint.slide_name;
         }
 
         let checkpointSlideColumnWrapper = $("<div>", {
@@ -83,5 +74,20 @@
 
         let checkPointList = $("#checkpoints-list");
         checkPointList.append(checkpointRowWrapper);
+    }
+
+    player.addEventListener('timeupdate', updateSlideIfNeed);
+    function updateSlideIfNeed() {
+        let currentTime = player.currentTime;
+        for (let i = checkPoints.length - 1; i >= 0; --i) {
+            if (checkPoints[i].time < currentTime) {
+                let nextSlide = $.grep(slideList, function (e) {
+                    return e.number === checkPoints[i].slide_number;
+                })[0];
+                resizePresentationImageDiv();
+                presentationPlayerImage.css("background-image", "url(" + nextSlide.image + ")");
+                break;
+            }
+        }
     }
 </script>

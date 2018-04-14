@@ -1,3 +1,5 @@
+{% load static %}
+
 <div class="presentation-player-wrapper">
     <div id="image-box">
         <div id="presentation-player-image" class="img-fluid">
@@ -58,3 +60,35 @@
         </audio>
     </div>
 </div>
+<script src="{% static "js/audio-player.js" %}"></script>
+
+<script>
+    let presentationPlayerImage = $("#presentation-player-image");
+
+    let imageHeight;
+    let imageWidth;
+
+    function getImageSize(imageUrl) {
+        let image = new Image();
+        image.src = imageUrl;
+        image.onload = function () {
+            imageWidth = image.naturalWidth;
+            imageHeight = image.naturalHeight;
+            resizePresentationImageDiv();
+        };
+    }
+
+    function resizePresentationImageDiv() {
+        let slideshowImageWidth = presentationPlayerImage.width();
+        presentationPlayerImage.height(slideshowImageWidth * imageHeight / imageWidth);
+    }
+</script>
+
+{% if slides %}
+    <script>
+        {% autoescape off %}
+            getImageSize("{{ slides.0.image }}");
+            presentationPlayerImage.css("background-image", "url({{ slides.0.image }})")
+        {% endautoescape %}
+    </script>
+{% endif %}

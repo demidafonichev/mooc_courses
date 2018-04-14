@@ -258,3 +258,14 @@ body {
     border-radius: 4px;
     background-color: #ffffff;
 }
+
+.catalog-header {
+    align-items: baseline;
+}
+
+#search-course {
+    width:20%;
+    height: 36px;
+    margin-left: 10px;
+    margin-bottom: 20px;
+}

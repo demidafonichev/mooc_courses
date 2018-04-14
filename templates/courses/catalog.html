@@ -1,7 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="container">
-        <h1 class="my-4">Все курсы</h1>
+    <div class="row catalog-header">
+        <h1 class="col-lg-9 col-md-9 col-sm-6 my-4">Все курсы</h1>
+        <input id="search-course" type="text" class="col-lg-3 col-md-3 col-sm-6 form-control" placeholder="Поиск...">
+    </div>
         <div class="row">
             {% for course in courses %}
                 <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">

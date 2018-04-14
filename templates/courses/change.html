@@ -24,19 +24,7 @@
                 </div>
             </div>
         </div>
-        <button id="pointer-button" class="btn btn-dark">Указатель</button>
-        <div class="row">
-            <div class="col-md-8 col-sm-8 mb-4">
-                <h3 class="my-4" id="slides-label">Все слайды</h3>
-                {% include "courses/slides_panel.html" %}
-            </div>
-            <div class="col-md-4 col-sm-4 mb-4 checkpoints-wrapper" id="checkpoints-wrapper">
-                <h3 class="my-4" id="checkpoints-label">Контрольные точки</h3>
-                {% include "courses/checkpoints_list.html" %}
-                <h3 class="my-4" id="pointers-label">Указатели</h3>
-                {% include "courses/pointers_list.html" %}
-            </div>
-        </div>
+        {% include "courses/presentation-controllers.html" %}
         <button id="save" class="btn btn-dark" type="submit">Сохранить</button>
     </div><!-- /.container -->
 
@@ -48,8 +36,13 @@
         fillCheckPointsList();
         fillPointersList();
 
+        slideList.forEach(function(slide) {
+            addSlideToChooseList(slide);
+        });
+
         $("#save").click(function() {
             console.log(checkPoints);
+            console.log(pointers);
         });
     </script>
 {% endblock %}

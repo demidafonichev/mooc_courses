@@ -26,18 +26,25 @@
             class: "checkpoint-time col-md-3 table-col"
         });
 
-        let checkPointTime;
+        let checkPointTimeWrapper;
         if (head) {
-            checkPointTime = "Время";
+            checkPointTimeWrapper = $("<div>", {
+                class: "cell",
+                text: "Время"
+            });
         } else {
-            checkPointTime = formatTime(checkPoint.time);
+            checkPointTimeWrapper = $("<input>", {
+                class: "time",
+                value: formatTime(checkPoint.time),
+                css: {
+                    "background-color": "inherit",
+                    "color": "inherit"
+                }
+            });
         }
 
-        let checkpointTimeCellWrapper = $("<div>", {
-            class: "cell",
-            text: checkPointTime
-        });
-        checkpointTimeColumnWrapper.append(checkpointTimeCellWrapper);
+
+        checkpointTimeColumnWrapper.append(checkPointTimeWrapper);
         checkpointRowWrapper.append(checkpointTimeColumnWrapper);
 
         let checkPointSlideName;
@@ -77,6 +84,7 @@
     }
 
     player.addEventListener('timeupdate', updateSlideIfNeed);
+
     function updateSlideIfNeed() {
         let currentTime = player.currentTime;
         for (let i = checkPoints.length - 1; i >= 0; --i) {

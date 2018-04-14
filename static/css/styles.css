@@ -273,3 +273,11 @@ body {
 #prev-slide, #next-slide, #cursor {
     display: none;
 }
+
+.time {
+    border: 0;
+}
+
+.time:hover, .time:focus, .time:active {
+    outline: none;
+}

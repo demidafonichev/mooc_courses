@@ -20,9 +20,26 @@ def courses_catalog(request):
         courses.append({"id": course.id,
                         "title": course.title,
                         "description": course.description,
-                        "cover": cover.image})
+                        "cover": cover.image.url})
 
     return render(request, "courses/catalog.html", {"courses": courses})
+
+
+@csrf_exempt
+def search_course(request):
+    search_text = json.loads(request.body.decode("utf-8"))["search_text"]
+
+    courses = []
+    for course in Course.objects.filter(title__startswith=search_text):
+        cover = Slide.objects.get(course=course, number=0)
+        courses.append({"id": course.id,
+                        "title": course.title,
+                        "description": course.description,
+                        "cover": cover.image.url})
+
+    return HttpResponse(status=status.HTTP_200_OK,
+                        content=json.dumps({"courses": courses}),
+                        content_type="application/json")
 
 
 def create_course(request):

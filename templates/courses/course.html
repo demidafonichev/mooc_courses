@@ -45,7 +45,10 @@
     <div id="slideshow-modal" class="modal-centered modal">
         <div class="modal-content">
             <div id="image-box">
-                <img src="" class="slideshow-image" id="slideshow"/>
+                <div id="slideshow-image" class="img-fluid">
+                    <div id="cursor"></div>
+                </div>
+                {#                <img src="" class="slideshow-image" />#}
                 <a class="carousel-control-prev" id="prev-slide">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                     <span class="sr-only">Previous</span>
@@ -124,6 +127,10 @@
             let pointers = [];
             let comments;
             let points;
+
+            let imageHeight;
+            let imageWidth;
+
             {% for slide in slides %}
                 comments = [];
                 {% for comment in slide.comments %}
@@ -164,7 +171,24 @@
                     points: points
                 });
             {% endfor %}
+
+            let image = new Image();
+            image.src = "{{ slides.0.image.url }}";
+            image.onload = function () {
+                imageWidth = image.naturalWidth;
+                imageHeight = image.naturalHeight;
+            };
         {% endautoescape %}
+
+        $(window).resize(function() {
+            resizeSlideshowImageDiv();
+        });
+
+        function resizeSlideshowImageDiv() {
+            let slideshowImage = $("#slideshow-image");
+            let slideshowImageWidth = slideshowImage.width();
+            slideshowImage.height(slideshowImageWidth * imageHeight / imageWidth);
+        }
 
         let currentSlideshowSlideNumber;
 
@@ -181,6 +205,9 @@
             $("#slideshow").attr("src", $("#image0").attr("src"));
 
             $("#slideshow-modal").modal();
+
+            resizeSlideshowImageDiv();
+            $("#slideshow-image").css("background-image", "url({{ slides.0.image.url }})");
         });
 
         function updateSlideshowControllers() {
@@ -204,7 +231,7 @@
                 return e.number === currentSlideshowSlideNumber;
             })[0];
 
-            $("#slideshow").attr("src", slide.image);
+            $("#slideshow-image").css("background-image", "url(" + slide.image + ")");
         }
 
         function updateSlideshow() {
@@ -229,6 +256,8 @@
             $("#comment-box").css("padding-top", "15px");
 
             $("#slideshow-modal").modal();
+
+            resizeSlideshowImageDiv();
         });
 
         $("#slideshow-modal").on("hidden.bs.modal", function () {
@@ -325,7 +354,11 @@
         }
 
         player.addEventListener('timeupdate', updateSlideIfNeed);
-        player.addEventListener('timeupdate', addPointerIfNeed);
+
+        for (let i = 0; i < 4; ++i) {
+            player.addEventListener('timeupdate', addPointerIfNeed);
+        }
+
 
         function updateSlideIfNeed() {
             let currentTime = player.currentTime;
@@ -335,21 +368,30 @@
                         return e.number === checkPoints[i].slideNumber;
                     })[0];
 
-                    $("#slideshow").attr("src", nextSlide.image);
+                    resizeSlideshowImageDiv();
+                    $("#slideshow-image").css("background-image", "url(" + nextSlide.image + ")");
                     break;
                 }
             }
         }
+
         function addPointerIfNeed() {
             let currentTime = player.currentTime;
             for (let i = 0; i < pointers.length; ++i) {
                 let pointer = pointers[i];
                 if (currentTime > pointer.start_time &&
                     currentTime < pointer.end_time) {
-                    for (let i = 0; i < pointer.points.length; ++i) {
-                        let point = pointer.points[i];
-                        if (currentTime > point.time) {
+                    for (let j = 0; j < pointer.points.length; ++j) {
+                        let point = pointer.points[j];
+                        if (currentTime <= point.time) {
+                            console.log(currentTime, point);
                             console.log("*");
+                            let slideshowImage = $("#slideshow-image");
+                            let left = point.left * slideshowImage.width() / 100;
+                            let top = point.top * slideshowImage.height() / 100;
+                            {#console.log(left, top);#}
+                            $("#cursor").css("left", left);
+                            $("#cursor").css("top", top);
                             break;
                         }
                     }

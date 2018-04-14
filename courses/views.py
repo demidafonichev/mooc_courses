@@ -122,27 +122,34 @@ def get_course(request, course_id):
                 "author_name": comment.author if comment.author else "",
                 "text": comment.text
             })
-        slides.append({"id": slide.pk,
-                       "number": slide.number,
-                       "image": slide.image.url,
-                       "comments": comments})
+        slides.append({
+            "id": slide.pk,
+            "number": slide.number,
+            "image": slide.image.url,
+            "comments": comments
+        })
 
     check_points = []
     for check_point in CheckPoint.objects.filter(course=course):
-        check_points.append({"number": check_point.number,
-                             "time": check_point.time,
-                             "slide_number": check_point.slide_number})
+        check_points.append({
+            "id": check_point.id,
+            "number": check_point.number,
+            "time": check_point.time,
+            "slide_number": check_point.slide_number
+        })
 
     pointers = []
     for pointer in Pointer.objects.filter(course=course):
         points = []
         for point in Point.objects.filter(pointer=pointer):
             points.append({
+                "id": point.id,
                 "time": point.time,
                 "left": point.left,
                 "top": point.top
             })
         pointers.append({
+            "id": pointer.id,
             "start_time": pointer.start_time,
             "end_time": pointer.end_time,
             "points": points

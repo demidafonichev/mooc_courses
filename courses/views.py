@@ -163,8 +163,10 @@ def delete_course(request, course_id):
 @csrf_exempt
 def save_comment(request):
     comment_data = json.loads(request.body.decode("utf-8"))
+    author = User.objects.get(username=request.user.username)
     comment = Comment.objects.create(
         text=comment_data["text"],
+        author=author,
         slide=Slide.objects.get(pk=comment_data["slide_id"])
     )
     return HttpResponse(status=status.HTTP_200_OK,
@@ -172,7 +174,7 @@ def save_comment(request):
                         content=json.dumps({
                             "id": comment.id,
                             "slide_id": comment.slide.id,
-                            "author_id": comment.author.id if comment.author else -1,
-                            "author_name": comment.author if comment.author else """""",
+                            "author_id": comment.author.id if comment.author.id else -1,
+                            "author_name": comment.author.username if comment.author.username else "",
                             "text": comment.text
                         }))

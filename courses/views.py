@@ -125,7 +125,7 @@ def get_course(request, course_id):
             })
         slides.append({"id": slide.pk,
                        "number": slide.number,
-                       "image": slide.image,
+                       "image": slide.image.url,
                        "comments": comments})
 
     check_points = []

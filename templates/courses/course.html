@@ -7,7 +7,7 @@
         <div class="row">
             <div class="col-md-8">
                 <div class="cover-wrapper">
-                    <img id="course-cover" class="img-fluid" src="{{ slides.0.image.url }}" alt="">
+                    <img id="course-cover" class="img-fluid" src="{{ slides.0.image }}" alt="">
                     <div class="cover-overlay">
                         <button id="play-course">
                             <span class="btn btn-default"></span>
@@ -25,7 +25,7 @@
         <div class="row">
             {% for slide in slides %}
                 <div class="col-md-3 col-sm-6 mb-4">
-                    <img id="image{{ slide.number }}" class="img-fluid" src="{{ slide.image.url }}">
+                    <img id="image{{ slide.number }}" class="img-fluid" src="{{ slide.image }}">
                 </div>
             {% endfor %}
         </div>
@@ -145,7 +145,7 @@
                 slideList.push({
                     id: {{ slide.id }},
                     number: {{ slide.number }},
-                    image: "{{ slide.image.url }}",
+                    image: "{{ slide.image }}",
                     comments: comments
                 });
             {% endfor %}
@@ -173,7 +173,7 @@
             {% endfor %}
 
             let image = new Image();
-            image.src = "{{ slides.0.image.url }}";
+            image.src = "{{ slides.0.image }}";
             image.onload = function () {
                 imageWidth = image.naturalWidth;
                 imageHeight = image.naturalHeight;
@@ -207,7 +207,7 @@
             $("#slideshow-modal").modal();
 
             resizeSlideshowImageDiv();
-            $("#slideshow-image").css("background-image", "url({{ slides.0.image.url }})");
+            $("#slideshow-image").css("background-image", "url({{ slides.0.image }})");
         });
 
         function updateSlideshowControllers() {

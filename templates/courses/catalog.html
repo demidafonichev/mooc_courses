@@ -1,11 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="container">
-    <div class="row catalog-header">
-        <h1 class="col-lg-9 col-md-9 col-sm-6 my-4">Все курсы</h1>
-        <input id="search-course" type="text" class="col-lg-3 col-md-3 col-sm-6 form-control" placeholder="Поиск...">
-    </div>
-        <div class="row">
+        <div class="row catalog-header">
+            <h1 class="col-lg-9 col-md-9 col-sm-6 my-4">Все курсы</h1>
+            <input id="search-course" type="text" class="col-lg-3 col-md-3 col-sm-6 form-control"
+                   placeholder="Поиск...">
+        </div>
+        <div id="courses-catalog" class="row">
             {% for course in courses %}
                 <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">
                     <div class="card h-100">
@@ -20,5 +21,65 @@
                 </div>
             {% endfor %}
         </div><!-- /.row -->
+        <script>
+            let searchInput = $("#search-course");
+            let coursesCatalog = $("#courses-catalog");
+            searchInput.on("input", function() {
+                let searchText = searchInput.val();
+
+                $.ajax({
+                    url: baseUrl + "courses/search_course",
+                    type: "POST",
+                    data: JSON.stringify({"search_text": searchText}),
+                    success: function(data) {
+                        let coursesList = data["courses"];
+                        coursesCatalog.empty();
+                        for (let i = 0; i < coursesList.length; ++i) {
+                            addCourseToCatalog(coursesList[i]);
+                        }
+                    },
+                    error: function() {
+                        console.log("error while searching")
+                    }
+                })
+            });
+
+            function addCourseToCatalog(course) {
+                let itemWrapper = $("<div>", {
+                    class: "col-lg-3 col-md-4 col-sm-6 portfolio-item"
+                });
+                let cardWrapper = $("<div>", {
+                    class: "card h-100"
+                });
+                let courseLink = $("<a>", {
+                    href: "/courses/get_course/" + course.id
+                });
+                let courseCover = $("<img>", {
+                    class: "card-img-top",
+                    src: course.cover
+                });
+                courseLink.append(courseCover);
+                cardWrapper.append(courseLink);
+
+                let bodyWrapper = $("<div>", {
+                    class: "card-body"
+                });
+                let courseTitle = $("<h4>", {
+                    class: "card-title",
+                    text: course.title
+                });
+                let courseDescription = $("<p>", {
+                    class: "card-text",
+                    text: course.description
+                })
+                bodyWrapper.append(courseTitle);
+                bodyWrapper.append(courseDescription);
+                cardWrapper.append(bodyWrapper);
+
+                itemWrapper.append(cardWrapper);
+
+                coursesCatalog.append(itemWrapper);
+            }
+        </script>
     </div>
 {% endblock %}

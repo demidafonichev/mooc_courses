@@ -25,7 +25,6 @@ def courses_catalog(request):
     return render(request, "courses/catalog.html", {"courses": courses})
 
 
-@csrf_exempt
 def search_course(request):
     search_text = json.loads(request.body.decode("utf-8"))["search_text"]
 
@@ -37,6 +36,7 @@ def search_course(request):
                         "description": course.description,
                         "cover": cover.image.url})
 
+    print(courses)
     return HttpResponse(status=status.HTTP_200_OK,
                         content=json.dumps({"courses": courses}),
                         content_type="application/json")

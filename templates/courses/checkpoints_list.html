@@ -35,14 +35,31 @@
         } else {
             checkPointTimeWrapper = $("<input>", {
                 class: "time",
-                value: formatTime(checkPoint.time),
+                value: formatTimeToString(checkPoint.time),
                 css: {
                     "background-color": "inherit",
                     "color": "inherit"
                 }
             });
+            checkPointTimeWrapper.change(function () {
+                console.log(checkPointTimeWrapper.val());
+                let time = formatStringToTime(checkPointTimeWrapper.val());
+                if (time) {
+                    checkPoint.time = time[0] * 60 + time[1];
+                    checkPoints.sort(function (a, b) {
+                        if (a.time > b.time) return 1;
+                        if (a.time < b.time) return -1;
+                        return 0;
+                    });
+                    for (let i = 0; i < checkPoints.length; ++i) {
+                        checkPoints[i].number = i;
+                    }
+                    fillCheckPointsList();
+                } else {
+                    checkPointTimeWrapper.val(formatTimeToString(checkPoint.time));
+                }
+            });
         }
-
 
         checkpointTimeColumnWrapper.append(checkPointTimeWrapper);
         checkpointRowWrapper.append(checkpointTimeColumnWrapper);

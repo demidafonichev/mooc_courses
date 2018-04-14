@@ -36,7 +36,7 @@ playPauseButton.addEventListener('click', togglePlay);
 player.addEventListener('timeupdate', updateProgress);
 player.addEventListener('volumechange', updateVolume);
 player.addEventListener('loadedmetadata', function () {
-    totalTime.textContent = formatTime(player.duration);
+    totalTime.textContent = formatTimeToString(player.duration);
 });
 player.addEventListener('canplay', makePlay);
 player.addEventListener('ended', function () {
@@ -89,7 +89,7 @@ function updateProgress() {
     
     progress.style.width = percent + '%';
 
-    currentTime.textContent = formatTime(current);
+    currentTime.textContent = formatTimeToString(current);
 }
 
 function updateVolume() {
@@ -145,10 +145,18 @@ function changeVolume(event) {
     }
 }
 
-function formatTime(time) {
+function formatTimeToString(time) {
+    console.log("here");
     let min = Math.floor(time / 60);
     let sec = Math.floor(time % 60);
     return min + ':' + (sec < 10 ? '0' + sec : sec);
+}
+
+function formatStringToTime(string) {
+    if (string.match(/^(0|[1-9][0-9]*):[0-5][0-9]$/)) {
+        return [parseInt(string.split(":")[0]), parseInt(string.split(":")[1])];
+    }
+    return false;
 }
 
 function togglePlay() {

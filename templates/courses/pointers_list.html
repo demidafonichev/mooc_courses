@@ -29,7 +29,7 @@
         if (head) {
             pointerTimeStart = "Время начала";
         } else {
-            pointerTimeStart = formatTime(pointer.start_time);
+            pointerTimeStart = formatTimeToString(pointer.start_time);
         }
 
         let pointerTimeStartCellWrapper = $("<div>", {
@@ -44,7 +44,7 @@
         if (head) {
             pointerTimeEnd = "Время конца";
         } else {
-            pointerTimeEnd = formatTime(pointer.end_time);
+            pointerTimeEnd = formatTimeToString(pointer.end_time);
         }
         let pointerTimeEndColumnWrapper = $("<div>", {
             class: "pointer-end col-md-5 table-col"

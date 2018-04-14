@@ -36,7 +36,6 @@ def search_course(request):
                         "description": course.description,
                         "cover": cover.image.url})
 
-    print(courses)
     return HttpResponse(status=status.HTTP_200_OK,
                         content=json.dumps({"courses": courses}),
                         content_type="application/json")

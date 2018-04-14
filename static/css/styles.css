@@ -264,8 +264,12 @@ body {
 }
 
 #search-course {
-    width:20%;
+    width:100%;
     height: 36px;
-    margin-left: 10px;
     margin-bottom: 20px;
+}
+
+.search-panel {
+    width:100%;
+    padding-left: 15px;
 }

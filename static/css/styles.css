@@ -219,6 +219,10 @@ body {
     width: 10%;
 }
 
+.delete-checkpoint:active, .delete-pointer:active {
+    outline: none;
+}
+
 #choose-slide-button {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;

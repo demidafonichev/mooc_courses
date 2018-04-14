@@ -33,19 +33,7 @@
                 </div>
             </div>
         </div>
-        <button id="pointer-button" class="btn btn-dark">Указатель</button>
-        <div class="row">
-            <div class="col-md-8 col-sm-8 mb-4">
-                <h3 class="my-4" id="slides-label">Все слайды</h3>
-                {% include "courses/slides_panel.html" %}
-            </div>
-            <div class="col-md-4 col-sm-4 mb-4 checkpoints-wrapper" id="checkpoints-wrapper">
-                <h3 class="my-4" id="checkpoints-label">Контрольные точки</h3>
-                {% include "courses/checkpoints_list.html" %}
-                <h3 class="my-4" id="pointers-label">Указатели</h3>
-                {% include "courses/pointers_list.html" %}
-            </div>
-        </div>
+        {% include "courses/presentation-controllers.html" %}
         <button id="save" class="btn btn-dark" type="submit">Сохранить</button>
     </div><!-- /.container -->
 
@@ -136,36 +124,6 @@
                 getImageSize(slideList[0].data);
                 resizePresentationImageDiv();
                 presentationPlayerImage.css("background-image", "url(" + slideList[0].data + ")")
-            }
-
-            function addSlideToChooseList(slide) {
-                let slideLine = $("<a>", {
-                    class: "dropdown-item",
-                    text: slide.name
-                });
-                slideLine.click(function () {
-                    currentSlideshowSlideNumber = slide.number;
-                    console.log("choose slide: ", slide);
-                    let checkPoint = {
-                        number: checkPoints.length,
-                        time: player.currentTime,
-                        slide_name: slide.name,
-                        slide_number: slide.number
-                    };
-                    checkPoints.push(checkPoint);
-                    presentationPlayerImage.css("backgroundImage", "url(" + slide.data + ")");
-
-                    checkPoints.sort(function (a, b) {
-                        if (a.time > b.time) return 1;
-                        if (a.time < b.time) return -1;
-                        return 0;
-                    });
-                    for (let i = 0; i < checkPoints.length; ++i) {
-                        checkPoints[i].number = i;
-                    }
-                    fillCheckPointsList();
-                });
-                $("#slide-list").append(slideLine);
             }
 
             if (!$("#audio-input").is(":visible")) {

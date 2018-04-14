@@ -82,6 +82,22 @@
         let slideshowImageWidth = presentationPlayerImage.width();
         presentationPlayerImage.height(slideshowImageWidth * imageHeight / imageWidth);
     }
+
+    player.addEventListener('timeupdate', updateSlideIfNeed);
+
+    function updateSlideIfNeed() {
+        let currentTime = player.currentTime;
+        for (let i = checkPoints.length - 1; i >= 0; --i) {
+            if (checkPoints[i].time < currentTime) {
+                let nextSlide = $.grep(slideList, function (e) {
+                    return e.number === checkPoints[i].slide_number;
+                })[0];
+                resizePresentationImageDiv();
+                presentationPlayerImage.css("background-image", "url(" + nextSlide.image + ")");
+                break;
+            }
+        }
+    }
 </script>
 
 {% if slides %}

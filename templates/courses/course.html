@@ -68,8 +68,6 @@
             resizePresentationImageDiv();
         });
 
-        let currentSlideshowSlideNumber;
-
         $("#play-course").click(function () {
             console.log(checkPoints);
             console.log(pointers);
@@ -89,7 +87,13 @@
             presentationPlayerImage.css("background-image", "url({{ slides.0.image }})");
         });
 
-        function updateSlideshowControllers() {
+        function updatePresentationPlayer() {
+            updateCommentList();
+            updatePresentationImage();
+            updatePresentationPlayerControllers();
+        }
+
+        function updatePresentationPlayerControllers() {
             let prevSlide = $("#prev-slide");
             let nextSlide = $("#next-slide");
 
@@ -105,7 +109,7 @@
             }
         }
 
-        function updateSlideshowImage() {
+        function updatePresentationImage() {
             let slide = $.grep(slideList, function (e) {
                 return e.number === currentSlideshowSlideNumber;
             })[0];
@@ -113,11 +117,6 @@
             presentationPlayerImage.css("background-image", "url(" + slide.image + ")");
         }
 
-        function updateSlideshow() {
-            updateCommentList();
-            updateSlideshowImage();
-            updateSlideshowControllers();
-        }
 
         function getImageNumberFromID(id) {
             return parseInt(id.substr("image".length));
@@ -127,10 +126,8 @@
             currentSlideshowSlideNumber = getImageNumberFromID(this.id);
 
             updateCommentList();
-            updateSlideshowControllers();
-
-            updateSlideshowControllers();
-            updateSlideshowImage();
+            updatePresentationPlayerControllers();
+            updatePresentationImage();
             $("#audio-player").hide();
             $("#comment-box").css("padding-top", "15px");
 
@@ -147,12 +144,12 @@
 
         $("#prev-slide").click(function () {
             currentSlideshowSlideNumber--;
-            updateSlideshow();
+            updatePresentationPlayer();
         });
 
         $("#next-slide").click(function () {
             currentSlideshowSlideNumber++;
-            updateSlideshow();
+            updatePresentationPlayer();
         });
 
         $("#send-comment").click(function () {

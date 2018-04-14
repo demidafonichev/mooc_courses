@@ -64,6 +64,7 @@
 
 <script>
     let presentationPlayerImage = $("#presentation-player-image");
+    let currentSlideshowSlideNumber;
 
     let imageHeight;
     let imageWidth;
@@ -92,6 +93,7 @@
                 let nextSlide = $.grep(slideList, function (e) {
                     return e.number === checkPoints[i].slide_number;
                 })[0];
+                currentSlideshowSlideNumber = nextSlide.number;
                 resizePresentationImageDiv();
                 presentationPlayerImage.css("background-image", "url(" + nextSlide.image + ")");
                 break;

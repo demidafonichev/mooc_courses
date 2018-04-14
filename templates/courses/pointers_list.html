@@ -1,0 +1,79 @@
+<div id="pointers-list">
+</div>
+
+<script>
+    function fillPointersList() {
+        $("#pointers-list").empty();
+        addPointerToPointersList({}, true);
+        console.log(pointers.length);
+        for (let i = 0; i < pointers.length; ++i) {
+            addPointerToPointersList(pointers[i], false);
+        }
+    }
+
+    function addPointerToPointersList(pointer, head) {
+        let rowClass;
+        if (head) {
+            rowClass = "row table-row table-head margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
+        } else {
+            rowClass = "row table-row margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
+        }
+
+        let pointerRowWrapper = $("<div>", {
+            class: rowClass
+        });
+        let pointerTimeStartColumnWrapper = $("<div>", {
+            class: "pointer-start col-md-5 table-col"
+        });
+
+        let pointerTimeStart;
+        if (head) {
+            pointerTimeStart = "Время начала";
+        } else {
+            pointerTimeStart = formatTime(pointer.start_time);
+        }
+
+        let pointerTimeStartCellWrapper = $("<div>", {
+            class: "cell",
+            text: pointerTimeStart
+        });
+        pointerTimeStartColumnWrapper.append(pointerTimeStartCellWrapper);
+        pointerRowWrapper.append(pointerTimeStartColumnWrapper);
+
+
+        let pointerTimeEnd;
+        if (head) {
+            pointerTimeEnd = "Время конца";
+        } else {
+            pointerTimeEnd = formatTime(pointer.end_time);
+        }
+        let pointerTimeEndColumnWrapper = $("<div>", {
+            class: "pointer-end col-md-5 table-col"
+        });
+
+        let pointerTimeEndCellWrapper = $("<div>", {
+            class: "cell",
+            text: pointerTimeEnd
+        });
+        pointerTimeEndColumnWrapper.append(pointerTimeEndCellWrapper);
+        pointerRowWrapper.append(pointerTimeEndColumnWrapper);
+
+        if (!head) {
+            let deletePointerButton = $("<button>", {
+                class: "close delete-pointer col-md-2",
+                type: "button",
+                html: "<span aria-hidden=\"true\">&times;</span>"
+            });
+            pointerRowWrapper.append(deletePointerButton);
+            deletePointerButton.click(function () {
+                let i = pointers.indexOf(pointer);
+                pointers.splice(i, 1);
+
+                fillPointersList();
+            });
+        }
+
+        let pointerList = $("#pointers-list");
+        pointerList.append(pointerRowWrapper);
+    }
+</script>

@@ -1,0 +1,87 @@
+<div id="checkpoints-list">
+</div>
+
+<script>
+    function fillCheckPointsList() {
+        console.log(checkPoints);
+
+        $("#checkpoints-list").empty();
+        addCheckPointToCheckpointsList({}, true, false);
+        addCheckPointToCheckpointsList(checkPoints[0], false, true);
+        console.log(checkPoints.length);
+        for (let i = 1; i < checkPoints.length; ++i) {
+            addCheckPointToCheckpointsList(checkPoints[i], false, false);
+        }
+    }
+
+    function addCheckPointToCheckpointsList(checkPoint, head, firstSlide) {
+        console.log(checkPoint, head, firstSlide);
+        let rowClass;
+        if (head) {
+            rowClass = "row table-row table-head margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
+        } else {
+            rowClass = "row table-row margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
+        }
+
+        let checkpointRowWrapper = $("<div>", {
+            class: rowClass
+        });
+        let checkpointTimeColumnWrapper = $("<div>", {
+            class: "checkpoint-time col-md-3 table-col"
+        });
+
+        let checkPointTime;
+        if (head) {
+            checkPointTime = "Время";
+        } else {
+            checkPointTime = formatTime(checkPoint.time);
+        }
+
+        let checkpointTimeCellWrapper = $("<div>", {
+            class: "cell",
+            text: checkPointTime
+        });
+        checkpointTimeColumnWrapper.append(checkpointTimeCellWrapper);
+        checkpointRowWrapper.append(checkpointTimeColumnWrapper);
+
+        let checkPointSlideName;
+        if (head) {
+            checkPointSlideName = "Слайд";
+        } else {
+            let checkPointSlideNumber = checkPoint.slide_number;
+            let slide = $.grep(slides, function (e) {
+                return e.number === checkPointSlideNumber;
+            })[0];
+            checkPointSlideName = slide.name;
+            console.log(slide);
+        }
+
+        let checkpointSlideColumnWrapper = $("<div>", {
+            class: "checkpoint-slide col-md-8 table-col"
+        });
+        let checkpointSlideCellWrapper = $("<div>", {
+            class: "cell",
+            text: checkPointSlideName
+        });
+        checkpointSlideColumnWrapper.append(checkpointSlideCellWrapper);
+        checkpointRowWrapper.append(checkpointSlideColumnWrapper);
+
+        if (!head && !firstSlide) {
+            let deleteCheckpointButton = $("<button>", {
+                class: "close delete-checkpoint col-md-1",
+                type: "button",
+                html: "<span aria-hidden=\"true\">&times;</span>"
+            });
+            checkpointRowWrapper.append(deleteCheckpointButton);
+            deleteCheckpointButton.click(function () {
+                let i = checkPoints.indexOf(checkPoint);
+                checkPoints.splice(i, 1);
+
+                fillCheckPointsList();
+            });
+        }
+
+        let checkPointList = $("#checkpoints-list");
+        checkPointList.append(checkpointRowWrapper);
+    }
+</script>

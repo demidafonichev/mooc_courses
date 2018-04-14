@@ -21,53 +21,8 @@
             <input id="audio-input" type="file"/>
         </div>
 
-        <h2 class="my-4" id="cover-label">Обложка курса</h2>
-        <div class="cover-wrapper">
-            <div id="course-cover" class="img-fluid"></div>
-            {#            <img id="course-cover" class="img-fluid" src="" alt="">#}
-            <div id="audio-player" class="audio green-audio-player">
-                <div class="loading">
-                    <div class="spinner"></div>
-                </div>
-                <div class="play-pause-btn">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="24" viewBox="0 0 18 24">
-                        <path fill="#566574" fill-rule="evenodd" d="M18 12L0 24V0" class="play-pause-icon"
-                              id="playPause"></path>
-                    </svg>
-                </div>
-
-                <div class="controls">
-                    <span class="current-time">0:00</span>
-                    <div class="slider" data-direction="horizontal">
-                        <div class="progress">
-                            <div class="pin" id="progress-pin" data-method="rewind"></div>
-                        </div>
-                    </div>
-                    <span class="total-time">0:00</span>
-                </div>
-
-                <div class="volume">
-                    <div class="volume-btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
-                            <path fill="#566574" fill-rule="evenodd"
-                                  d="M14.667 0v2.747c3.853 1.146 6.666 4.72 6.666 8.946 0 4.227-2.813 7.787-6.666 8.934v2.76C20 22.173 24 17.4 24 11.693 24 5.987 20 1.213 14.667 0zM18 11.693c0-2.36-1.333-4.386-3.333-5.373v10.707c2-.947 3.333-2.987 3.333-5.334zm-18-4v8h5.333L12 22.36V1.027L5.333 7.693H0z"
-                                  id="speaker"></path>
-                        </svg>
-                    </div>
-                    <div class="volume-controls hidden">
-                        <div class="slider" data-direction="vertical">
-                            <div class="progress">
-                                <div class="pin" id="volume-pin" data-method="changeVolume"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <audio crossorigin>
-                    <source id="audio-source" src="" type="audio/mpeg">
-                </audio>
-            </div>
-        </div>
+        <h2 class="my-4" id="cover-label">Текущий слайд</h2>
+        {% include "courses/presentation-player.html" %}
         <div id="slide-controllers" class="btn-group">
             <button id="next-slide-button" class="btn btn-dark">Следующий слайд</button>
             <div class="dropdown">
@@ -83,23 +38,20 @@
         <div class="row">
             <div class="col-md-8 col-sm-8 mb-4">
                 <h3 class="my-4" id="slides-label">Все слайды</h3>
-                <div class="row" id="images">
-                </div>
+                {% include "courses/slides_panel.html" %}
             </div>
             <div class="col-md-4 col-sm-4 mb-4 checkpoints-wrapper" id="checkpoints-wrapper">
                 <h3 class="my-4" id="checkpoints-label">Контрольные точки</h3>
-                <div id="checkpoints-list">
-                </div>
+                {% include "courses/checkpoints_list.html" %}
                 <h3 class="my-4" id="pointers-label">Указатели</h3>
-                <div id="pointers-list">
-                </div>
+                {% include "courses/pointers_list.html" %}
             </div>
         </div>
         <button id="save" class="btn btn-dark" type="submit">Сохранить</button>
     </div><!-- /.container -->
 
     <script>
-
+        let presentationPlayerImage = $("#presentation-player-image");
 
         $(document).ready(function () {
             $("#cover-label").hide();
@@ -122,9 +74,8 @@
         });
 
         function resizeCourseCoverDiv() {
-            let courseCover = $("#course-cover");
-            let courseCoverWidth = courseCover.width();
-            courseCover.height(courseCoverWidth * imageHeight / imageWidth);
+            let courseCoverWidth = presentationPlayerImage.width();
+            presentationPlayerImage.height(courseCoverWidth * imageHeight / imageWidth);
         }
 
         let course = {};
@@ -187,44 +138,17 @@
                     addSlideToChooseList(e);
                 });
 
+                let image = new Image();
+                image.src = slides[0].data;
+                image.onload = function () {
+                    imageWidth = image.naturalWidth;
+                    imageHeight = image.naturalHeight;
+                    console.log("(", imageWidth, "; ", imageHeight, ")");
+                    resizeCourseCoverDiv();
+                    presentationPlayerImage.css("background-image", "url(" + slides[0].data + ")");
+                };
+
                 console.log("slides: ", slides);
-            }
-
-            function createImageDom(slide) {
-                let cardWrapper = $("<div>", {
-                    class: "col-lg-3 col-md-4 col-sm-6 portfolio-item"
-                });
-                let imageWrapper = $("<div>", {
-                    class: "card h-100"
-                });
-                let image = $("<img>", {
-                    class: "card-img-top",
-                    src: slide.data,
-                    id: "image" + slide.id,
-                });
-                let cardBody = $("<div>", {
-                    class: "slide-name",
-                    text: slide.name
-                });
-
-                imageWrapper.append(image);
-                imageWrapper.append(cardBody);
-
-                cardWrapper.append(imageWrapper);
-                $("#images").append(cardWrapper);
-
-                if (slide.number === 0) {
-                    let image = new Image();
-                    image.src = slide.data;
-                    image.onload = function () {
-                        imageWidth = image.naturalWidth;
-                        imageHeight = image.naturalHeight;
-                        console.log("(", imageWidth, "; ", imageHeight, ")");
-                        resizeCourseCoverDiv();
-                        $("#course-cover").css("background-image", "url(" + slide.data + ")");
-                    };
-                    currentSlideshowSlideNumber = 0;
-                }
             }
 
             function addSlideToChooseList(slide) {
@@ -240,7 +164,7 @@
                         slide_number: currentSlideshowSlideNumber
                     };
                     checkPoints.push(checkPoint);
-                    $("#course-cover").css("backgroundImage", "url(" + slide.data + ")");
+                    presentationPlayerImage.css("backgroundImage", "url(" + slide.data + ")");
 
                     checkPoints.sort(function (a, b) {
                         if (a.time > b.time) return 1;
@@ -315,10 +239,10 @@
             pointClicked = true;
         });
 
-        $("#course-cover").mousedown(function (e) {
+        presentationPlayerImage.mousedown(function (e) {
             if (pointClicked) {
                 pointing = true;
-                let courseCover = $("#course-cover");
+                let courseCover = presentationPlayerImage;
                 let offset = courseCover.offset();
                 let left = (e.pageX - offset.left) / courseCover.width() * 100;
                 let top = (e.pageY - offset.top) / courseCover.height() * 100;
@@ -333,9 +257,9 @@
             }
         });
 
-        $("#course-cover").mousemove(function (e) {
+        presentationPlayerImage.mousemove(function (e) {
             if (pointing) {
-                let courseCover = $("#course-cover");
+                let courseCover = presentationPlayerImage;
                 let offset = courseCover.offset();
                 let left = (e.pageX - offset.left) / courseCover.width() * 100;
                 let top = (e.pageY - offset.top) / courseCover.height() * 100;
@@ -354,7 +278,7 @@
 
                 pointer.end_time = player.currentTime;
                 pointers.push(pointer);
-                pointers.sort(function(a, b) {
+                pointers.sort(function (a, b) {
                     if (a.start_time > b.start_time) return 1;
                     if (a.start_time < b.start_time) return -1;
                     return 0;
@@ -387,168 +311,10 @@
                     return e.number === currentSlideshowSlideNumber;
                 })[0];
 
-                $("#course-cover").css("backgroundImage", "url(" + nextSlide.data + ")");
+                presentationPlayerImage.css("backgroundImage", "url(" + nextSlide.data + ")");
                 fillCheckPointsList();
             }
         });
-
-        function fillCheckPointsList() {
-            console.log(checkPoints);
-
-            $("#checkpoints-list").empty();
-            addCheckPointToCheckpointsList({}, true, false);
-            addCheckPointToCheckpointsList(checkPoints[0], false, true);
-            console.log(checkPoints.length);
-            for (let i = 1; i < checkPoints.length; ++i) {
-                addCheckPointToCheckpointsList(checkPoints[i], false, false);
-            }
-        }
-
-        function addCheckPointToCheckpointsList(checkPoint, head, firstSlide) {
-            console.log(checkPoint, head, firstSlide);
-            let rowClass;
-            if (head) {
-                rowClass = "row table-row table-head margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
-            } else {
-                rowClass = "row table-row margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
-            }
-
-            let checkpointRowWrapper = $("<div>", {
-                class: rowClass
-            });
-            let checkpointTimeColumnWrapper = $("<div>", {
-                class: "checkpoint-time col-md-3 table-col"
-            });
-
-            let checkPointTime;
-            if (head) {
-                checkPointTime = "Время";
-            } else {
-                checkPointTime = formatTime(checkPoint.time);
-            }
-
-            let checkpointTimeCellWrapper = $("<div>", {
-                class: "cell",
-                text: checkPointTime
-            });
-            checkpointTimeColumnWrapper.append(checkpointTimeCellWrapper);
-            checkpointRowWrapper.append(checkpointTimeColumnWrapper);
-
-            let checkPointSlideName;
-            if (head) {
-                checkPointSlideName = "Слайд";
-            } else {
-                let checkPointSlideNumber = checkPoint.slide_number;
-                let slide = $.grep(slides, function (e) {
-                    return e.number === checkPointSlideNumber;
-                })[0];
-                checkPointSlideName = slide.name;
-                console.log(slide);
-            }
-
-            let checkpointSlideColumnWrapper = $("<div>", {
-                class: "checkpoint-slide col-md-8 table-col"
-            });
-            let checkpointSlideCellWrapper = $("<div>", {
-                class: "cell",
-                text: checkPointSlideName
-            });
-            checkpointSlideColumnWrapper.append(checkpointSlideCellWrapper);
-            checkpointRowWrapper.append(checkpointSlideColumnWrapper);
-
-            if (!head && !firstSlide) {
-                let deleteCheckpointButton = $("<button>", {
-                    class: "close delete-checkpoint col-md-1",
-                    type: "button",
-                    html: "<span aria-hidden=\"true\">&times;</span>"
-                });
-                checkpointRowWrapper.append(deleteCheckpointButton);
-                deleteCheckpointButton.click(function () {
-                    let i = checkPoints.indexOf(checkPoint);
-                    checkPoints.splice(i, 1);
-
-                    fillCheckPointsList();
-                });
-            }
-
-            let checkPointList = $("#checkpoints-list");
-            checkPointList.append(checkpointRowWrapper);
-        }
-
-        function fillPointersList() {
-            $("#pointers-list").empty();
-            addPointerToPointersList({}, true);
-            console.log(pointers.length);
-            for (let i = 0; i < pointers.length; ++i) {
-                addPointerToPointersList(pointers[i], false);
-            }
-        }
-
-        function addPointerToPointersList(pointer, head) {
-            let rowClass;
-            if (head) {
-                rowClass = "row table-row table-head margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
-            } else {
-                rowClass = "row table-row margin-0 input-group mb-2 mr-sm-2 mb-sm-0";
-            }
-
-            let pointerRowWrapper = $("<div>", {
-                class: rowClass
-            });
-            let pointerTimeStartColumnWrapper = $("<div>", {
-                class: "pointer-start col-md-5 table-col"
-            });
-
-            let pointerTimeStart;
-            if (head) {
-                pointerTimeStart = "Время начала";
-            } else {
-                pointerTimeStart = formatTime(pointer.start_time);
-            }
-
-            let pointerTimeStartCellWrapper = $("<div>", {
-                class: "cell",
-                text: pointerTimeStart
-            });
-            pointerTimeStartColumnWrapper.append(pointerTimeStartCellWrapper);
-            pointerRowWrapper.append(pointerTimeStartColumnWrapper);
-
-
-            let pointerTimeEnd;
-            if (head) {
-                pointerTimeEnd = "Время конца";
-            } else {
-                pointerTimeEnd = formatTime(pointer.end_time);
-            }
-            let pointerTimeEndColumnWrapper = $("<div>", {
-                class: "pointer-end col-md-5 table-col"
-            });
-
-            let pointerTimeEndCellWrapper = $("<div>", {
-                class: "cell",
-                text: pointerTimeEnd
-            });
-            pointerTimeEndColumnWrapper.append(pointerTimeEndCellWrapper);
-            pointerRowWrapper.append(pointerTimeEndColumnWrapper);
-
-            if (!head) {
-                let deletePointerButton = $("<button>", {
-                    class: "close delete-pointer col-md-2",
-                    type: "button",
-                    html: "<span aria-hidden=\"true\">&times;</span>"
-                });
-                pointerRowWrapper.append(deletePointerButton);
-                deletePointerButton.click(function () {
-                    let i = pointers.indexOf(pointer);
-                    pointers.splice(i, 1);
-
-                    fillPointersList();
-                });
-            }
-
-            let pointerList = $("#pointers-list");
-            pointerList.append(pointerRowWrapper);
-        }
 
         $("#save").click(function () {
             course.title = $("#title").val();

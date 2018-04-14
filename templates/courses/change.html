@@ -1,4 +1,65 @@
 {% extends "base.html" %}
 {% block content %}
 
+
+    <script>
+        {% autoescape off %}
+            let slideList = [];
+            let checkPoints = [];
+            let pointers = [];
+            let comments;
+            let points;
+
+            let imageHeight;
+            let imageWidth;
+
+            {% for slide in slides %}
+                comments = [];
+                {% for comment in slide.comments %}
+                    comments.push({
+                        id: {{ comment.id }},
+                        slideID: {{ comment.slide_id }},
+                        authorID: {{ comment.author_id }},
+                        authorName: "{{ comment.author_name }}",
+                        text: "{{ comment.text }}"
+                    })
+                {% endfor %}
+                slideList.push({
+                    id: {{ slide.id }},
+                    number: {{ slide.number }},
+                    image: "{{ slide.image }}",
+                    comments: comments
+                });
+            {% endfor %}
+            {% for checkPoint in check_points %}
+                checkPoints.push({
+                    number: {{ checkPoint.number }},
+                    time: {{ checkPoint.time }},
+                    slideNumber: {{ checkPoint.number }}
+                });
+            {% endfor %}
+            {% for pointer in pointers %}
+                points = []
+                {% for point in pointer.points %}
+                    points.push({
+                        time: {{ point.time }},
+                        left: {{ point.left }},
+                        top: {{ point.top }}
+                    });
+                {% endfor %}
+                pointers.push({
+                    start_time: {{ pointer.start_time }},
+                    end_time: {{ pointer.end_time }},
+                    points: points
+                });
+            {% endfor %}
+
+            let image = new Image();
+            image.src = "{{ slides.0.image }}";
+            image.onload = function () {
+                imageWidth = image.naturalWidth;
+                imageHeight = image.naturalHeight;
+            };
+        {% endautoescape %}
+    </script>
 {% endblock %}

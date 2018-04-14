@@ -1,0 +1,28 @@
+<div class="row" id="images">
+</div>
+
+<script>
+    function createImageDom(slide) {
+        let cardWrapper = $("<div>", {
+            class: "col-lg-3 col-md-4 col-sm-6 portfolio-item"
+        });
+        let imageWrapper = $("<div>", {
+            class: "card h-100"
+        });
+        let image = $("<img>", {
+            class: "card-img-top",
+            src: slide.data,
+            id: "image" + slide.id,
+        });
+        let cardBody = $("<div>", {
+            class: "slide-name",
+            text: slide.name
+        });
+
+        imageWrapper.append(image);
+        imageWrapper.append(cardBody);
+
+        cardWrapper.append(imageWrapper);
+        $("#images").append(cardWrapper);
+    }
+</script>

@@ -127,7 +127,7 @@ def get_course_data(course_id):
                 "id": comment.id,
                 "slide_id": comment.slide.id,
                 "author_id": comment.author.id if comment.author else -1,
-                "author_name": comment.author if comment.author else "",
+                "author_name": comment.author.username if comment.author.username else "",
                 "text": comment.text
             })
         slides.append({

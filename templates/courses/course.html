@@ -60,56 +60,9 @@
     </div>
 
     <script>
-        {% autoescape off %}
-            let slideList = [];
-            let checkPoints = [];
-            let pointers = [];
-            let comments;
-            let points;
-
-            {% for slide in slides %}
-                comments = [];
-                {% for comment in slide.comments %}
-                    comments.push({
-                        id: {{ comment.id }},
-                        slide_id: {{ comment.slide_id }},
-                        author_id: {{ comment.author_id }},
-                        author_name: "{{ comment.author_name }}",
-                        text: "{{ comment.text }}"
-                    });
-                {% endfor %}
-                slideList.push({
-                    id: {{ slide.id }},
-                    number: {{ slide.number }},
-                    image: "{{ slide.image }}",
-                    comments: comments
-                });
-            {% endfor %}
-            {% for checkPoint in check_points %}
-                checkPoints.push({
-                    number: {{ checkPoint.number }},
-                    time: {{ checkPoint.time }},
-                    slide_number: {{ checkPoint.number }}
-                });
-            {% endfor %}
-            {% for pointer in pointers %}
-                points = []
-                {% for point in pointer.points %}
-                    points.push({
-                        time: {{ point.time }},
-                        left: {{ point.left }},
-                        top: {{ point.top }}
-                    });
-                {% endfor %}
-                pointers.push({
-                    start_time: {{ pointer.start_time }},
-                    end_time: {{ pointer.end_time }},
-                    points: points
-                });
-            {% endfor %}
-
-            getImageSize("{{ slides.0.image }}");
-        {% endautoescape %}
+        let slideList = {{ slides|safe }};
+        let checkPoints = {{ check_points|safe }};
+        let pointers = {{ pointers|safe }};
 
         $(window).resize(function () {
             resizePresentationImageDiv();

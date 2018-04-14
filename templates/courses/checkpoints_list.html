@@ -45,7 +45,7 @@
                 console.log(checkPointTimeWrapper.val());
                 let time = formatStringToTime(checkPointTimeWrapper.val());
                 if (time) {
-                    checkPoint.time = time[0] * 60 + time[1];
+                    checkPoint.time = time;
                     checkPoints.sort(function (a, b) {
                         if (a.time > b.time) return 1;
                         if (a.time < b.time) return -1;

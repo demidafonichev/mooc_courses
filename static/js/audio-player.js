@@ -154,7 +154,10 @@ function formatTimeToString(time) {
 
 function formatStringToTime(string) {
     if (string.match(/^(0|[1-9][0-9]*):[0-5][0-9]$/)) {
-        return [parseInt(string.split(":")[0]), parseInt(string.split(":")[1])];
+        let time = parseInt(string.split(":")[0]) * 60 + parseInt(string.split(":")[1]);
+        if (time <= player.duration && time >= 0) {
+            return time;
+        }
     }
     return false;
 }

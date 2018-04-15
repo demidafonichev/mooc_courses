@@ -1,13 +1,11 @@
-from django.contrib.auth.views import login, logout
+from django.contrib.auth.views import logout
 from django.urls import path
 
-from accounts.forms import UserAuthenticationForm
 from . import views
 
 urlpatterns = [
-    path(r"", login, {"template_name": "accounts/login.html",
-                      "authentication_form": UserAuthenticationForm}, name="login"),
+    path(r"login_user/", views.login_user, name="login_user"),
+    path(r"register_user/", views.register_user, name="register_user"),
     path(r"logout/", logout, {"next_page": "/"}, name="logout"),
-    path(r"register/", views.register, name="register"),
     path(r"profile/", views.profile, name="profile")
 ]

@@ -4,7 +4,7 @@
         <div class="form-container">
             <div class="login-page">
                 <div class="form">
-                    <form method="post" action="{% url "register" %}">
+                    <form method="post" action="{% url "register_user" %}">
                         {% csrf_token %}
                         {% for field in form %}
                             {{ field }}
@@ -14,13 +14,7 @@
                                 {% for field in form %}
                                     {% for error in field.errors %}
                                         <div class="form-error">
-                                            {% if error|escape == "Username already registered." %}
-                                                Имя пользователя уже занято
-                                            {% elif error|escape == "The two password fields didn&#39;t match." %}
-                                                Пароли не совпадают
-                                            {% elif error|escape == "This password is too short. It must contain at least 8 characters." %}
-                                                Пароль слишком короткий, он должен содержать минимум 8 символов
-                                            {% endif %}
+                                            {{ error|escape }}
                                         </div>
                                     {% endfor %}
                                 {% endfor %}

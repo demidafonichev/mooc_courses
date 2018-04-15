@@ -4,14 +4,23 @@
         <div class="form-container">
             <div class="login-page">
                 <div class="form">
-                    <form method="post" action="{% url "login" %}">
+                    <form method="post" action="{% url "login_user" %}">
                         {% csrf_token %}
                         {% for field in form %}
                             {{ field }}
                         {% endfor %}
+                        {% if form.non_field_errors %}
+                            <div class="form-error-list">
+                                {% for error in form.non_field_errors %}
+                                    <div class="form-error">
+                                        {{ error }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                         <button type="submit">Авторизоваться</button>
                         <p class="message">Не зарегистрированны?
-                            <a href="{% url "register" %}">Создать аккаунт</a>
+                            <a href="{% url "register_user" %}">Создать аккаунт</a>
                         </p>
                     </form>
                 </div>

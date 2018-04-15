@@ -5,11 +5,11 @@ from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.template.context_processors import csrf
 
-from accounts.forms import UserRegistrationForm
+from accounts.forms import UserRegistrationForm, UserAuthenticationForm
 from courses.models import Course, Slide
 
 
-@login_required(login_url="login/")
+# @login_required(login_url="login/")
 def profile(request):
     courses = []
     for course in Course.objects.filter(author=User.objects.get(username=request.user.username)):
@@ -22,10 +22,29 @@ def profile(request):
     return render(request, "accounts/profile.html", {"courses": courses})
 
 
-def register(request):
+def login_user(request):
+    form = UserAuthenticationForm(request.POST or None)
+    print(form.errors)
+    print("here")
+    if request.method == 'POST':
+        print("here")
+        if form.is_valid():
+            user = form.login(request)
+            print("here")
+            if user:
+                login(request, user)
+                print("here")
+                return HttpResponseRedirect("/accounts/profile")
+
+    data = {}
+    data.update(csrf(request))
+    data["form"] = form
+    return render(request, "accounts/login.html", data)
+
+
+def register_user(request):
     form = UserRegistrationForm(request.POST or None)
     if request.method == "POST":
-        print(form.errors)
         if form.is_valid():
             user = form.save()
             user = authenticate(username=form.cleaned_data["username"],
@@ -33,9 +52,7 @@ def register(request):
             login(request, user)
             return HttpResponseRedirect("/accounts/profile")
 
-    token = {}
-    token.update(csrf(request))
-    token["form"] = form
-    token["is_user_authenticated"] = request.user.is_authenticated
-
-    return render(request, "accounts/register.html", token)
+    data = {}
+    data.update(csrf(request))
+    data["form"] = form
+    return render(request, "accounts/register.html", data)

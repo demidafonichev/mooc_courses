@@ -26,6 +26,9 @@
         {% if not courses %}
             <div>Ещё не создано ни одного курса</div>
         {% endif %}
+        <a href="{% url "create_course" %}">
+            <button class="btn btn-dark">Создать курс</button>
+        </a>
         <script>
             let searchInput = $("#search-course");
             let coursesCatalog = $("#courses-catalog");

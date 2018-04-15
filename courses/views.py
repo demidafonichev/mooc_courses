@@ -112,7 +112,9 @@ def save_course(request):
                 top=point_data["top"]
             )
 
-    return HttpResponse(status=status.HTTP_200_OK)
+    return HttpResponse(status=status.HTTP_200_OK,
+                        content=json.dumps({"course_id": course.id}),
+                        content_type="application/json")
 
 
 def get_course_data(course_id):
@@ -215,7 +217,9 @@ def change_course(request):
             )
     course.save()
 
-    return HttpResponse(status=status.HTTP_200_OK)
+    return HttpResponse(status=status.HTTP_200_OK,
+                        content=json.dumps({"course_id": course.id}),
+                        content_type="application/json")
 
 
 def delete_course(request, course_id):

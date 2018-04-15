@@ -58,6 +58,7 @@
                 type: "POST",
                 data: JSON.stringify(data),
                 success: function () {
+                    let course_id = data["course_id"]
                     document.location.href = baseUrl + "courses/get_course/" + course_id;
                 },
                 error: function () {

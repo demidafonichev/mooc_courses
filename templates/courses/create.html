@@ -197,7 +197,8 @@
                 processData: false,
                 contentType: false,
                 success: function (data) {
-                    document.location.href = baseUrl + "courses";
+                    let course_id = data["course_id"]
+                    document.location.href = baseUrl + "courses/get_course/" + course_id;
                 },
                 error: function (data) {
                     console.log("error while saving course...");

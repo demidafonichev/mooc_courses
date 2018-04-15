@@ -310,6 +310,11 @@ body {
     color: red;
     margin-bottom: 10px;
 }
+
 .form-error {
     margin-bottom: 5px;
+}
+
+#error-content {
+    width: 400px;
 }

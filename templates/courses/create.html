@@ -36,6 +36,8 @@
             </div>
         </div>
         <button id="save" class="btn btn-dark" type="submit">Сохранить</button>
+
+        {% include "courses/error_modal.html" %}
     </div><!-- /.container -->
 
     <script>
@@ -65,8 +67,8 @@
         }
 
         let course = {};
-        let slideList = [];
-        let audioFile = {};
+        let slideList;
+        let audioFile;
         let checkPoints = [];
         let pointers = [];
 
@@ -149,6 +151,7 @@
             let file = this.files[0];
             let audio = $("audio");
 
+            audioFile = {};
             audioFile.name = file.name;
 
             let fileReader = new FileReader();
@@ -187,6 +190,27 @@
             course.audio = audioFile;
             course.check_points = checkPoints;
             course.pointers = pointers;
+
+            if (!course.title) {
+                $("#error-text").text("Укажите название презентации");
+                $("#error-modal").modal();
+                return;
+            }
+            if (!course.slides) {
+                $("#error-text").text("Добавьте слайды презентации");
+                $("#error-modal").modal();
+                return;
+            }
+            if (!course.audio) {
+                $("#error-text").text("Добавьте аудио файл");
+                $("#error-modal").modal();
+                return;
+            }
+            if (course.check_points.length === 1) {
+                $("#error-text").text("Укажите переключение файлов");
+                $("#error-modal").modal();
+                return;
+            }
 
             let formData = new FormData();
             formData.append("course", JSON.stringify(course));

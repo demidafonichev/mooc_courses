@@ -27,6 +27,8 @@
             </div>
         </div>
         <button id="save" class="btn btn-dark" type="submit">Сохранить</button>
+
+        {% include "courses/error_modal.html" %}
     </div><!-- /.container -->
 
     <script>
@@ -45,19 +47,36 @@
         });
 
         $("#save").click(function () {
-            let data = {
+            let course = {
                 course_id: course_id,
                 title: $("#title").val(),
                 description: $("#description").val(),
+                slides: slideList,
                 check_points: checkPoints,
                 pointers: pointers
+            }
+
+            if (!course.title) {
+                $("#error-text").text("Укажите название презентации");
+                $("#error-modal").modal();
+                return;
+            }
+            if (!course.slides) {
+                $("#error-text").text("Добавьте слайды презентации");
+                $("#error-modal").modal();
+                return;
+            }
+            if (course.check_points.length === 1) {
+                $("#error-text").text("Укажите переключение файлов");
+                $("#error-modal").modal();
+                return;
             }
 
             $.ajax({
                 url: baseUrl + "courses/change_course",
                 type: "POST",
-                data: JSON.stringify(data),
-                success: function () {
+                data: JSON.stringify(course),
+                success: function (data) {
                     let course_id = data["course_id"]
                     document.location.href = baseUrl + "courses/get_course/" + course_id;
                 },

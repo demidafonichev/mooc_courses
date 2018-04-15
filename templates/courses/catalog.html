@@ -23,6 +23,9 @@
                 </div>
             {% endfor %}
         </div><!-- /.row -->
+        {% if not courses %}
+            <div>Ещё не создано ни одного курса</div>
+        {% endif %}
         <script>
             let searchInput = $("#search-course");
             let coursesCatalog = $("#courses-catalog");

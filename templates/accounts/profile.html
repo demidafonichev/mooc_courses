@@ -17,6 +17,9 @@
                 </div>
             {% endfor %}
         </div>
+        {% if not courses %}
+            <div>Вами ещё не создано ни одного курса</div>
+        {% endif %}
         <a href="{% url "create_course" %}">
             <button class="btn btn-dark">Создать курс</button>
         </a>

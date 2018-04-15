@@ -182,8 +182,41 @@ def change_course_page(request, course_id):
     return render(request, "courses/change.html", course_data)
 
 
-def change_course(request, course_id):
-    pass
+def change_course(request):
+    course_data = json.loads(request.body.decode("utf-8"))
+    course = Course.objects.get(pk=course_data["course_id"])
+
+    print(course_data)
+    course.title = course_data["title"]
+    course.description = course_data["description"]
+
+    CheckPoint.objects.filter(course=course).delete()
+    for check_point_data in course_data["check_points"]:
+        check_point = CheckPoint.objects.create(
+            course=course,
+            number=check_point_data["number"],
+            time=check_point_data["time"],
+            slide_name=check_point_data["slide_name"],
+            slide_number=check_point_data["slide_number"]
+        )
+
+    Pointer.objects.filter(course=course).delete()
+    for pointer_data in course_data["pointers"]:
+        pointer = Pointer.objects.create(
+            course=course,
+            start_time=pointer_data["start_time"],
+            end_time=pointer_data["end_time"]
+        )
+        for point_data in pointer_data["points"]:
+            point = Point.objects.create(
+                pointer=pointer,
+                time=point_data["time"],
+                left=point_data["left"],
+                top=point_data["top"]
+            )
+    course.save()
+
+    return HttpResponse(status=status.HTTP_200_OK)
 
 
 def delete_course(request, course_id):

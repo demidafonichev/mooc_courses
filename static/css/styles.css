@@ -282,6 +282,20 @@ body {
     border: 0;
 }
 
-.time:hover, .time:focus, .time:active {
+.time:focus, #title:focus, #description:focus {
     outline: none;
+}
+
+.cover-overlay {
+    background: rgba(0, 0, 0, 0.4)
+}
+
+#play-course {
+    position: absolute;
+    top: 45%;
+    left: 45%;
+    width: 10%;
+    height: calc(10% / 0.5625);
+    background-size: 100%;
+    background-image: url("../images/play.png");
 }

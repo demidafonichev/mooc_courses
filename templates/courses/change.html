@@ -13,40 +13,64 @@
 
         <h2 class="my-4" id="current-image">Текущий слайд</h2>
         {% include "courses/presentation-player.html" %}
-        <div id="slide-controllers" class="btn-group">
-            <button id="next-slide-button" class="btn btn-dark">Следующий слайд</button>
-            <div class="dropdown">
-                <button id="choose-slide-button" class="btn btn-secondary dropdown-toggle" type="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Выбрать слайд
-                </button>
-                <div id="slide-list" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                </div>
+        {% include "courses/presentation-controllers.html" %}
+        <div class="row">
+            <div class="col-md-8 col-sm-8 mb-4">
+                <h3 class="my-4" id="slides-label">Все слайды</h3>
+                {% include "courses/slides_panel.html" %}
+            </div>
+            <div class="col-md-4 col-sm-4 mb-4 checkpoints-wrapper" id="checkpoints-wrapper">
+                <h3 class="my-4" id="checkpoints-label">Контрольные точки</h3>
+                {% include "courses/checkpoints_list.html" %}
+                <h3 class="my-4" id="pointers-label">Указатели</h3>
+                {% include "courses/pointers_list.html" %}
             </div>
         </div>
-        {% include "courses/presentation-controllers.html" %}
         <button id="save" class="btn btn-dark" type="submit">Сохранить</button>
     </div><!-- /.container -->
 
     <script>
+        let course_id = {{ course.pk }};
         let slideList = {{ slides|safe }};
         let checkPoints = {{ check_points|safe }};
         let pointers = {{ pointers|safe }};
 
         $(document).ready(function () {
+            console.log(course_id);
+            console.log(slideList);
+            console.log(checkPoints);
+            console.log(pointers);
+
             fillCheckPointsList();
             fillPointersList();
 
             slideList.forEach(function (slide) {
                 addSlideToChooseList(slide);
             });
-
-            console.log(slideList);
         });
 
         $("#save").click(function () {
             console.log(checkPoints);
             console.log(pointers);
+            let data = {
+                course_id: course_id,
+                title: $("#title").val(),
+                description: $("#description").val(),
+                check_points: checkPoints,
+                pointers: pointers
+            }
+
+            $.ajax({
+                url: baseUrl + "courses/change_course",
+                type: "POST",
+                data: JSON.stringify(data),
+                success: function () {
+                    document.location.href = baseUrl + "courses/get_course/" + course_id;
+                },
+                error: function () {
+                    console.log("error");
+                }
+            });
         });
     </script>
 {% endblock %}

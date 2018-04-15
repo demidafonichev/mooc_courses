@@ -36,11 +36,6 @@
         let pointers = {{ pointers|safe }};
 
         $(document).ready(function () {
-            console.log(course_id);
-            console.log(slideList);
-            console.log(checkPoints);
-            console.log(pointers);
-
             fillCheckPointsList();
             fillPointersList();
 
@@ -50,8 +45,6 @@
         });
 
         $("#save").click(function () {
-            console.log(checkPoints);
-            console.log(pointers);
             let data = {
                 course_id: course_id,
                 title: $("#title").val(),
@@ -68,7 +61,7 @@
                     document.location.href = baseUrl + "courses/get_course/" + course_id;
                 },
                 error: function () {
-                    console.log("error");
+                    console.log("error while changing...");
                 }
             });
         });

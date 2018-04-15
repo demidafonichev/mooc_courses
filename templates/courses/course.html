@@ -66,9 +66,6 @@
         let cursor = $("#cursor");
 
         $("#play-course").click(function () {
-            console.log(checkPoints);
-            console.log(pointers);
-
             currentSlideshowSlideNumber = 0;
             updateCommentList(currentSlideshowSlideNumber);
 
@@ -183,7 +180,7 @@
                         commentField.val("");
                     },
                     error: function (data) {
-                        console.log("error");
+                        console.log("error while saving comment...");
                     }
                 });
             }
@@ -240,14 +237,10 @@
                     for (let j = 0; j < pointer.points.length; ++j) {
                         let point = pointer.points[j];
                         if (currentTime <= point.time) {
-                            {#console.log(currentTime, point);#}
-                            {#console.log("*");#}
-                            console.log(point.left, point.top);
                             let left = point.left * presentationPlayerImage.width() / 100;
                             let top = point.top * presentationPlayerImage.height() / 100;
                             cursor.css("left", left);
                             cursor.css("top", top);
-                            {#console.log(left, top);#}
                             cursor.css("display", "block");
                             break;
                         }

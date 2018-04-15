@@ -35,9 +35,9 @@
         } else {
             if (firstSlide) {
                 checkPointTimeWrapper = $("<div>", {
-                class: "cell",
-                text: "0:00"
-            });
+                    class: "cell",
+                    text: "0:00"
+                });
             } else {
                 checkPointTimeWrapper = $("<input>", {
                     class: "time",
@@ -48,7 +48,6 @@
                     }
                 });
                 checkPointTimeWrapper.change(function () {
-                    console.log(checkPointTimeWrapper.val());
                     let time = formatStringToTime(checkPointTimeWrapper.val());
                     if (time) {
                         checkPoint.time = time;

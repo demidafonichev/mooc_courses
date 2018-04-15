@@ -188,8 +188,6 @@
             course.check_points = checkPoints;
             course.pointers = pointers;
 
-            console.log(checkPoints);
-
             let formData = new FormData();
             formData.append("course", JSON.stringify(course));
             $.ajax({
@@ -202,7 +200,7 @@
                     document.location.href = baseUrl + "courses";
                 },
                 error: function (data) {
-                    console.log("error");
+                    console.log("error while saving course...");
                 }
             });
         });

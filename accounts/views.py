@@ -24,16 +24,11 @@ def profile(request):
 
 def login_user(request):
     form = UserAuthenticationForm(request.POST or None)
-    print(form.errors)
-    print("here")
     if request.method == 'POST':
-        print("here")
         if form.is_valid():
             user = form.login(request)
-            print("here")
             if user:
                 login(request, user)
-                print("here")
                 return HttpResponseRedirect("/accounts/profile")
 
     data = {}

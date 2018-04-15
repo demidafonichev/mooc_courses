@@ -186,7 +186,6 @@ def change_course(request):
     course_data = json.loads(request.body.decode("utf-8"))
     course = Course.objects.get(pk=course_data["course_id"])
 
-    print(course_data)
     course.title = course_data["title"]
     course.description = course_data["description"]
 

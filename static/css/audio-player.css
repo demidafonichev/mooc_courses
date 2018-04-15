@@ -35,7 +35,7 @@
 }
 
 .audio.green-audio-player .slider .progress {
-    background-color: #44BFA3;
+    background-color: #566574;
     border-radius: inherit;
     position: absolute;
     pointer-events: none;
@@ -45,7 +45,7 @@
     height: 16px;
     width: 16px;
     border-radius: 8px;
-    background-color: #44BFA3;
+    background-color: #566574;
     position: absolute;
     pointer-events: all;
     box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.32);

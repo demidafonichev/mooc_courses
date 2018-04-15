@@ -23,8 +23,9 @@ def profile(request):
 
 
 def register(request):
+    form = UserRegistrationForm(request.POST or None)
     if request.method == "POST":
-        form = UserRegistrationForm(request.POST)
+        print(form.errors)
         if form.is_valid():
             user = form.save()
             user = authenticate(username=form.cleaned_data["username"],
@@ -34,7 +35,7 @@ def register(request):
 
     token = {}
     token.update(csrf(request))
-    token["form"] = UserRegistrationForm()
+    token["form"] = form
     token["is_user_authenticated"] = request.user.is_authenticated
 
     return render(request, "accounts/register.html", token)

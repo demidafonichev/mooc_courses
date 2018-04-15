@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class UserAuthenticationForm(AuthenticationForm):
     username = forms.CharField(
-        widget=forms.TextInput(attrs={"placeholder": "Имя пользователя или почта"}),
+        widget=forms.TextInput(attrs={"placeholder": "Имя пользователя"}),
     )
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={"placeholder": "Пароль"})
@@ -22,15 +22,7 @@ class UserRegistrationForm(UserCreationForm):
         super(UserRegistrationForm, self).__init__(*args, **kwargs)
 
     username = forms.CharField(
-        widget=forms.TextInput(attrs={"placeholder": "Имя пользователя или почта"}),
-    )
-    last_name = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Фамилия"})
-    )
-    first_name = forms.CharField(
-        required=False,
-        widget=forms.TextInput(attrs={"placeholder": "Имя"})
+        widget=forms.TextInput(attrs={"placeholder": "Имя пользователя"}),
     )
     password1 = forms.CharField(
         widget=forms.PasswordInput(attrs={"placeholder": "Пароль"})
@@ -41,20 +33,19 @@ class UserRegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ("username", "last_name", "first_name", "password1", "password2")
+        fields = ("username", "password1", "password2")
 
-    def clean_email(self):
-        email = self.cleaned_data["username"]
+    def clean_username(self):
+        username = self.cleaned_data["username"]
         try:
-            User.objects.get(email=email)
-            raise forms.ValidationError("Email already registered")
+            User.objects.get(username=username)
+            raise forms.ValidationError("Username already registered.")
         except User.DoesNotExist:
-            return email
+            return username
 
     def save(self, commit=True):
         user = super(UserRegistrationForm, self).save(commit=False)
         user.username = self.cleaned_data["username"]
-        user.email = self.cleaned_data["username"]
         user.set_password(self.cleaned_data["password1"])
         if commit:
             user.save()

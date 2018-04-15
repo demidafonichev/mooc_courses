@@ -303,3 +303,13 @@ body {
 .username {
     margin-right: 15px;
 }
+
+.form-error-list {
+    font-size: 14px;
+    font-family: "Roboto", sans-serif;
+    color: red;
+    margin-bottom: 10px;
+}
+.form-error {
+    margin-bottom: 5px;
+}

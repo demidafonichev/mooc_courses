@@ -82,16 +82,13 @@
     presentationPlayerImage.mousedown(function (e) {
         if (pointClicked) {
             pointing = true;
-            let courseCover = presentationPlayerImage;
-            let offset = courseCover.offset();
-            let left = (e.pageX - offset.left) / courseCover.width() * 100;
-            let top = (e.pageY - offset.top) / courseCover.height() * 100;
+            let coordinates = getCurrentCursorCoordinates(e);
             pointer = {
                 start_time: player.currentTime,
                 points: [{
                     time: player.currentTime,
-                    left: left,
-                    top: top
+                    left: coordinates[0],
+                    top: coordinates[1]
                 }]
             }
         }
@@ -99,17 +96,21 @@
 
     presentationPlayerImage.mousemove(function (e) {
         if (pointing) {
-            let courseCover = presentationPlayerImage;
-            let offset = courseCover.offset();
-            let left = (e.pageX - offset.left) / courseCover.width() * 100;
-            let top = (e.pageY - offset.top) / courseCover.height() * 100;
+            let coordinates = getCurrentCursorCoordinates(e);
             pointer.points.push({
                 time: player.currentTime,
-                left: left,
-                top: top
+                left: coordinates[0],
+                top: coordinates[1]
             });
         }
     });
+
+    function getCurrentCursorCoordinates(e) {
+        let offset = presentationPlayerImage.offset();
+        let left = (e.pageX - offset.left) / presentationPlayerImage.width() * 100;
+        let top = (e.pageY - offset.top) / presentationPlayerImage.height() * 100;
+        return [left, top];
+    }
 
     $(document).mouseup(function () {
         if (pointing) {

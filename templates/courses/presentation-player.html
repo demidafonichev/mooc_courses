@@ -79,6 +79,10 @@
         };
     }
 
+    $(window).resize(function () {
+        resizePresentationImageDiv();
+    });
+
     function resizePresentationImageDiv() {
         let slideshowImageWidth = presentationPlayerImage.width();
         presentationPlayerImage.height(slideshowImageWidth * imageHeight / imageWidth);

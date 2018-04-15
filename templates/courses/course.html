@@ -9,7 +9,6 @@
                     <img id="course-cover" class="img-fluid" src="{{ slides.0.image }}" alt="">
                     <div class="cover-overlay">
                         <div id="play-course">
-{#                            <span class="btn btn-default"></span>#}
                         </div>
                     </div>
                 </div>
@@ -64,9 +63,7 @@
         let checkPoints = {{ check_points|safe }};
         let pointers = {{ pointers|safe }};
 
-        $(window).resize(function () {
-            resizePresentationImageDiv();
-        });
+        let cursor = $("#cursor");
 
         $("#play-course").click(function () {
             console.log(checkPoints);
@@ -235,25 +232,30 @@
 
         function addPointerIfNeed() {
             let currentTime = player.currentTime;
+            let needToAddPointer = false;
             for (let i = 0; i < pointers.length; ++i) {
                 let pointer = pointers[i];
-                if (currentTime > pointer.start_time &&
-                    currentTime < pointer.end_time) {
+                if (currentTime > pointer.start_time && currentTime < pointer.end_time) {
+                    needToAddPointer = true;
                     for (let j = 0; j < pointer.points.length; ++j) {
                         let point = pointer.points[j];
                         if (currentTime <= point.time) {
-                            console.log(currentTime, point);
-                            console.log("*");
-                            let slideshowImage = presentationPlayerImage;
-                            let left = point.left * slideshowImage.width() / 100;
-                            let top = point.top * slideshowImage.height() / 100;
+                            {#console.log(currentTime, point);#}
+                            {#console.log("*");#}
+                            console.log(point.left, point.top);
+                            let left = point.left * presentationPlayerImage.width() / 100;
+                            let top = point.top * presentationPlayerImage.height() / 100;
+                            cursor.css("left", left);
+                            cursor.css("top", top);
                             {#console.log(left, top);#}
-                            $("#cursor").css("left", left);
-                            $("#cursor").css("top", top);
+                            cursor.css("display", "block");
                             break;
                         }
                     }
                 }
+            }
+            if (!needToAddPointer) {
+                cursor.hide();
             }
         }
     </script>

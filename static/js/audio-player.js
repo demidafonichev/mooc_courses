@@ -120,8 +120,7 @@ function getCoefficient(event) {
     let rect = slider.getBoundingClientRect();
     let K = 0;
     if (slider.dataset.direction === 'horizontal') {
-
-        let offsetX = event.clientX - slider.offsetLeft;
+        let offsetX = event.clientX - rect.left;
         let width = slider.clientWidth;
         K = offsetX / width;
     } else if (slider.dataset.direction === 'vertical') {
@@ -135,6 +134,8 @@ function getCoefficient(event) {
 
 function rewind(event) {
     if (inRange(event)) {
+        console.log("player.duration: ", player.duration)
+        console.log("getCoefficient(event): ", getCoefficient(event))
         player.currentTime = player.duration * getCoefficient(event);
     }
 }

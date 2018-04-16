@@ -134,8 +134,6 @@ function getCoefficient(event) {
 
 function rewind(event) {
     if (inRange(event)) {
-        console.log("player.duration: ", player.duration)
-        console.log("getCoefficient(event): ", getCoefficient(event))
         player.currentTime = player.duration * getCoefficient(event);
     }
 }

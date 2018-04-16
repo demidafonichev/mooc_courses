@@ -35,7 +35,9 @@
                 {% include "courses/pointers_list.html" %}
             </div>
         </div>
-        <button id="save" class="btn btn-dark" type="submit">Сохранить</button>
+        <button id="save" class="btn btn-dark" type="submit">Сохранить
+            <div id="loading"></div>
+        </button>
 
         {% include "courses/error_modal.html" %}
     </div><!-- /.container -->
@@ -214,6 +216,8 @@
 
             let formData = new FormData();
             formData.append("course", JSON.stringify(course));
+
+            $("#loading").css("display", "inline-flex");
             $.ajax({
                 url: baseUrl + "courses/save_course",
                 type: "POST",
@@ -226,6 +230,7 @@
                 },
                 error: function (data) {
                     console.log("error while saving course...");
+                    $("#saving").hide();
                 }
             });
         });

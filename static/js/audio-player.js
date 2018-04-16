@@ -72,12 +72,12 @@ function inRange(event) {
     let rect = rangeBox.getBoundingClientRect();
     let direction = rangeBox.dataset.direction;
     if (direction === 'horizontal') {
-        let min = rangeBox.offsetLeft;
-        let max = min + rangeBox.offsetWidth;
+        let min = rect.offsetLeft;
+        let max = min + rect.offsetWidth;
         if (event.clientX < min || event.clientX > max) return false;
     } else {
         let min = rect.top;
-        let max = min + rangeBox.offsetHeight;
+        let max = min + rect.offsetHeight;
         if (event.clientY < min || event.clientY > max) return false;
     }
     return true;

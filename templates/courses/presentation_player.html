@@ -71,7 +71,7 @@
     let imageHeight;
     let imageWidth;
 
-    function getImageSize(imageUrl) {
+    function setImageSize(imageUrl) {
         let image = new Image();
         image.src = imageUrl;
         image.onload = function () {
@@ -100,6 +100,7 @@
                     return e.number === checkPoints[i].slide_number;
                 })[0];
                 currentSlideshowSlideNumber = nextSlide.number;
+                setImageSize(nextSlide.image);
                 resizePresentationImageDiv();
                 presentationPlayerImage.css("background-image", "url(" + nextSlide.image + ")");
                 break;
@@ -107,12 +108,3 @@
         }
     }
 </script>
-
-{% if slides %}
-    <script>
-        {% autoescape off %}
-            getImageSize("{{ slides.0.image }}");
-            presentationPlayerImage.css("background-image", "url({{ slides.0.image }})")
-        {% endautoescape %}
-    </script>
-{% endif %}

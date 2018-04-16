@@ -40,6 +40,8 @@
                 return e.number === currentSlideshowSlideNumber;
             })[0];
 
+            setImageSize(nextSlide.image);
+            resizePresentationImageDiv();
             presentationPlayerImage.css("backgroundImage", "url(" + nextSlide.image + ")");
             fillCheckPointsList();
         }
@@ -59,6 +61,9 @@
                 slide_number: slide.number
             };
             checkPoints.push(checkPoint);
+
+            setImageSize(slide.image);
+            resizePresentationImageDiv();
             presentationPlayerImage.css("backgroundImage", "url(" + slide.image + ")");
 
             checkPoints.sort(function (a, b) {

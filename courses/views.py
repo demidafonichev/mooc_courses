@@ -66,7 +66,7 @@ def save_course(request):
     ext = "." + f.split("/")[-1]
     audio = ContentFile(base64.b64decode(audio_data))
     course.audio.save(
-        "".join([course_data["audio"]["name"], ext]),
+        course_data["audio"]["name"],
         audio
     )
 

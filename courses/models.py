@@ -62,7 +62,7 @@ class Slide(models.Model):
 
     def __str__(self):
         return "_".join([
-            str(self.course.title.replace("" "", "_")),
+            str(self.course.title.replace(" ", "_")),
             str(self.number),
             str(self.id)
         ])
@@ -94,7 +94,7 @@ class Comment(models.Model):
     def __str__(self):
         return "_".join([
             str(self.author),
-            self.text.replace("" "", "_")[:30]
+            self.text.replace(" ", "_")[:30]
         ])
 
 

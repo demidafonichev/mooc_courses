@@ -59,6 +59,15 @@
     </div>
 </div>
 
+{% if slides %}
+    <script>
+        {% autoescape off %}
+            setImageSize("{{ slides.0.image }}");
+            presentationPlayerImage.css("background-image", "url({{ slides.0.image }})")
+        {% endautoescape %}
+    </script>
+{% endif %}
+
 <script src="{% static "js/audio-player.js" %}"></script>
 
 <script>
@@ -105,12 +114,3 @@
         }
     }
 </script>
-
-{% if slides %}
-    <script>
-        {% autoescape off %}
-            setImageSize("{{ slides.0.image }}");
-            presentationPlayerImage.css("background-image", "url({{ slides.0.image }})")
-        {% endautoescape %}
-    </script>
-{% endif %}

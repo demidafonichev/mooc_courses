@@ -298,6 +298,7 @@ body {
     height: calc(10% / 0.5625);
     background-size: 100%;
     background-image: url("../images/play.png");
+    display: none;
 }
 
 .username {
@@ -333,4 +334,18 @@ body {
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
+}
+
+#load-course {
+    position: absolute;
+    top: 45%;
+    left: 45%;
+    width: 10%;
+    height: calc(10% / 0.5625);
+
+    border: 8px solid #3a4148;
+    border-top: 8px solid #ffffff;
+    border-radius: 50%;
+
+    animation: spin 2s linear infinite;
 }

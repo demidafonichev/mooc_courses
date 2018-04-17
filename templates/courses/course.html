@@ -8,6 +8,8 @@
                 <div class="cover-wrapper">
                     <img id="course-cover" class="img-fluid" src="{{ slides.0.image }}" alt="">
                     <div class="cover-overlay">
+                        <div id="load-course">
+                        </div>
                         <div id="play-course">
                         </div>
                     </div>
@@ -62,6 +64,11 @@
         let slideList = {{ slides|safe }};
         let checkPoints = {{ check_points|safe }};
         let pointers = {{ pointers|safe }};
+
+        player.addEventListener("canplay", function() {
+            $("#load-course").hide();
+            $("#play-course").show();
+        });
 
         let cursor = $("#cursor");
 

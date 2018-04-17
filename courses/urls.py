@@ -1,5 +1,8 @@
 from django.urls import path
 
+from django.conf import settings
+from django.conf.urls.static import static
+
 from .views import *
 
 urlpatterns = [
@@ -13,4 +16,4 @@ urlpatterns = [
     path(r"change_course/<course_id>", change_course, name="change_course"),
     path(r"delete_course/<course_id>", delete_course, name="delete_course"),
     path(r"save_slide_comment", save_comment, name="save_slide_comment")
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

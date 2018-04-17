@@ -55,14 +55,10 @@
 
         <audio crossorigin>
             <source id="audio-source" src="{{ course.audio.url }}" type="audio/mpeg">
-            {#            {% if course %}#}
-            {#                #}
-            {#            {% else %}#}
-            {#                <source id="audio-source" src="" type="audio/mpeg">#}
-            {#            {% endif %}#}
         </audio>
     </div>
 </div>
+
 <script src="{% static "js/audio-player.js" %}"></script>
 
 <script>

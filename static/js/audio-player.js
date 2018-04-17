@@ -38,6 +38,11 @@ player.addEventListener('volumechange', updateVolume);
 player.addEventListener('loadedmetadata', function () {
     totalTime.textContent = formatTimeToString(player.duration);
 });
+
+if (player.readyState >= 2) {
+    totalTime.textContent = formatTimeToString(player.duration);
+}
+
 player.addEventListener('canplay', makePlay);
 player.addEventListener('ended', function () {
     playPause.attributes.d.value = "M18 12L0 24V0";

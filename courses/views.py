@@ -31,7 +31,6 @@ def courses_catalog(request):
                                                     "is_user_authenticated": is_user_authenticated})
 
 
-
 @csrf_exempt
 def search_course(request):
     search_text = json.loads(request.body.decode("utf-8"))["search_text"]

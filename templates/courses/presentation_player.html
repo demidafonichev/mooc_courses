@@ -54,11 +54,12 @@
         </div>
 
         <audio crossorigin>
-            {% if course %}
-                <source id="audio-source" src="{{ course.audio.url }}" type="audio/mpeg">
-            {% else %}
-                <source id="audio-source" src="" type="audio/mpeg">
-            {% endif %}
+            <source id="audio-source" src="{{ course.audio.url }}" type="audio/mpeg">
+            {#            {% if course %}#}
+            {#                #}
+            {#            {% else %}#}
+            {#                <source id="audio-source" src="" type="audio/mpeg">#}
+            {#            {% endif %}#}
         </audio>
     </div>
 </div>

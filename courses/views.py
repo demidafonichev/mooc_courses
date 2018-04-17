@@ -13,6 +13,7 @@ from rest_framework import status
 from courses.models import Slide, Course, Comment, CheckPoint, Pointer, Point
 
 
+@csrf_exempt
 def courses_catalog(request):
     courses = []
     for course in Course.objects.all():
@@ -24,9 +25,14 @@ def courses_catalog(request):
             "cover": cover.image.url
         })
 
-    return render(request, "courses/catalog.html", {"courses": courses})
+    is_user_authenticated = request.user.is_authenticated
+
+    return render(request, "courses/catalog.html", {"courses": courses,
+                                                    "is_user_authenticated": is_user_authenticated})
 
 
+
+@csrf_exempt
 def search_course(request):
     search_text = json.loads(request.body.decode("utf-8"))["search_text"]
 
@@ -174,6 +180,7 @@ def get_course_data(course_id):
             "pointers": pointers}
 
 
+@csrf_exempt
 def get_course(request, course_id):
     course_data = get_course_data(course_id)
     return render(request, "courses/course.html", course_data)

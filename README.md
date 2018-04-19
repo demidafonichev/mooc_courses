@@ -1,8 +1,8 @@
 # MOOC courses  
 
-## Web application for easy creating MOOC courses without recordering a video  
+## Web application for easy creating MOOC courses without video recordering  
 
-### Now you can create presentations without recordering.  
+### Now you can create presentations without video recordering.  
 Just make following steps:  
 
 1. Open profile.
@@ -22,4 +22,4 @@ For that you need:
 3. Change check points list.
 4. Change pointers list.
 
-### To watch the course just click on course panel on course catalog and press "Play".
+### To watch the course just click on course card on course catalog and press "Play".

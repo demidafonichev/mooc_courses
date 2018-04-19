@@ -59,20 +59,13 @@
     </div>
 </div>
 
-{% if slides %}
-    <script>
-        {% autoescape off %}
-            setImageSize("{{ slides.0.image }}");
-            presentationPlayerImage.css("background-image", "url({{ slides.0.image }})")
-        {% endautoescape %}
-    </script>
-{% endif %}
-
 <script src="{% static "js/audio-player.js" %}"></script>
 
 <script>
     let presentationPlayerImage = $("#presentation-player-image");
     let currentSlideshowSlideNumber = 0;
+
+    let cursor = $("#cursor");
 
     let imageHeight;
     let imageWidth;
@@ -98,6 +91,10 @@
 
     player.addEventListener('timeupdate', updateSlideIfNeed);
 
+    for (let i = 0; i < 4; ++i) {
+        player.addEventListener('timeupdate', addPointerIfNeed);
+    }
+
     function updateSlideIfNeed() {
         let currentTime = player.currentTime;
         for (let i = checkPoints.length - 1; i >= 0; --i) {
@@ -113,4 +110,38 @@
             }
         }
     }
+
+    function addPointerIfNeed() {
+        let currentTime = player.currentTime;
+        let needToAddPointer = false;
+        for (let i = 0; i < pointers.length; ++i) {
+            let pointer = pointers[i];
+            if (currentTime > pointer.start_time && currentTime < pointer.end_time) {
+                needToAddPointer = true;
+                for (let j = 0; j < pointer.points.length; ++j) {
+                    let point = pointer.points[j];
+                    if (currentTime <= point.time) {
+                        let left = point.left * presentationPlayerImage.width() / 100;
+                        let top = point.top * presentationPlayerImage.height() / 100;
+                        cursor.css("left", left);
+                        cursor.css("top", top);
+                        cursor.css("display", "block");
+                        break;
+                    }
+                }
+            }
+        }
+        if (!needToAddPointer) {
+            cursor.hide();
+        }
+    }
 </script>
+
+{% if slides %}
+    <script>
+        {% autoescape off %}
+            setImageSize("{{ slides.0.image }}");
+            presentationPlayerImage.css("background-image", "url({{ slides.0.image }})")
+        {% endautoescape %}
+    </script>
+{% endif %}

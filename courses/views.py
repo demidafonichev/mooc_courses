@@ -133,8 +133,8 @@ def get_course_data(course_id):
             comments.append({
                 "id": comment.id,
                 "slide_id": comment.slide.id,
-                "author_id": comment.author.id if comment.author else -1,
-                "author_name": comment.author.username if comment.author.username else "",
+                "author_id": comment.author.id if comment.author and comment.author.id else -1,
+                "author_name": comment.author.username if comment.author and comment.author.username else "",
                 "text": comment.text
             })
         slides.append({
@@ -236,7 +236,11 @@ def delete_course(request, course_id):
 @csrf_exempt
 def save_comment(request):
     comment_data = json.loads(request.body.decode("utf-8"))
-    author = User.objects.get(username=request.user.username)
+    try:
+        author = User.objects.get(username=request.user.username)
+    except User.DoesNotExist:
+        author = None
+    # author = User.objects.get(username=request.user.username)
     comment = Comment.objects.create(
         text=comment_data["text"],
         author=author,
@@ -247,7 +251,7 @@ def save_comment(request):
                         content=json.dumps({
                             "id": comment.id,
                             "slide_id": comment.slide.id,
-                            "author_id": comment.author.id if comment.author.id else -1,
-                            "author_name": comment.author.username if comment.author.username else "",
+                            "author_id": comment.author.id if comment.author and comment.author.id else -1,
+                            "author_name": comment.author.username if comment.author and comment.author.username else "",
                             "text": comment.text
                         }))

@@ -16,7 +16,7 @@ class CoursesCatalog extends React.Component {
         this.searchCourses("");
 
         this.searchCourses = this.searchCourses.bind(this);
-        this.searchCourseOnChangeHandler = this.searchCourseOnChangeHandler.bind(this);
+        this.searchCoursesOnChangeHandler = this.searchCoursesOnChangeHandler.bind(this);
     }
 
     searchCourses(searchText) {
@@ -27,14 +27,12 @@ class CoursesCatalog extends React.Component {
             })
             .then(response => response.json())
             .then(responseJson => {
-                this.setState({
-                    courses: responseJson.courses
-                })
+                this.setState({courses: responseJson.courses})
             })
             .catch(error => console.log(error))
     }
 
-    searchCourseOnChangeHandler(event) {
+    searchCoursesOnChangeHandler(event) {
         let searchText = event.target.value;
         this.searchCourses(searchText);
     }
@@ -47,7 +45,7 @@ class CoursesCatalog extends React.Component {
                     <div className="search-panel col-lg-3 col-md-3 col-sm-6">
                         <input className="form-control"
                                placeholder="Поиск..."
-                               onChange={this.searchCourseOnChangeHandler}/>
+                               onChange={this.searchCoursesOnChangeHandler}/>
                     </div>
                 </div>
                 <div className="row">{

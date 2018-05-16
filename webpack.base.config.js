@@ -5,7 +5,7 @@ module.exports = {
   context: __dirname,
 
   entry: {
-    Main: './react/Main',
+    CoursesCatalog: './react/CoursesCatalog',
     vendors: ['react'],
   },
 

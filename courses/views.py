@@ -32,8 +32,8 @@ def courses_catalog(request):
 
 
 @csrf_exempt
-def search_course(request):
-    search_text = json.loads(request.body.decode("utf-8"))["search_text"]
+def search_courses(request):
+    search_text = json.loads(request.body.decode("utf-8"))["searchText"]
 
     courses = []
     for course in Course.objects.filter(title__startswith=search_text):

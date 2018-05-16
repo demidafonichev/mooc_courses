@@ -1,103 +1,10 @@
 {% extends "base.html" %}
 {% load render_bundle from webpack_loader %}
 {% block content %}
-
-    <div id="Main">
+    <div class="container">
+        <div id="coursesCatalog">
+        </div>
+        {% render_bundle "vendors" %}
+        {% render_bundle "CoursesCatalog" %}
     </div>
-    {% render_bundle "vendors" %}
-    {% render_bundle "Main" %}
-
-    {#    <div class="container">#}
-    {#        <div class="row catalog-header">#}
-    {#            <h1 class="col-lg-9 col-md-9 col-sm-6 my-4">Все курсы</h1>#}
-    {#            <div class="search-panel col-lg-3 col-md-3 col-sm-6">#}
-    {#                <input id="search-course" type="text" class="form-control"#}
-    {#                       placeholder="Поиск...">#}
-    {#            </div>#}
-    {#        </div>#}
-    {#        <div id="courses-catalog" class="row">#}
-    {#            {% for course in courses %}#}
-    {#                <div class="col-lg-3 col-md-4 col-sm-6 portfolio-item">#}
-    {#                    <div class="card h-100">#}
-    {#                        <a href="{% url "get_course" course_id=course.id %}">#}
-    {#                            <img class="card-img-top" src="{{ course.cover }}" alt="">#}
-    {#                        </a>#}
-    {#                        <div class="card-body">#}
-    {#                            <h4 class="card-title">{{ course.title }}</h4>#}
-    {#                            <p class="card-text">{{ course.description }}</p>#}
-    {#                        </div>#}
-    {#                    </div>#}
-    {#                </div>#}
-    {#            {% endfor %}#}
-    {#        </div><!-- /.row -->#}
-    {#        {% if not courses %}#}
-    {#            <div>Ещё не создано ни одного курса</div>#}
-    {#        {% endif %}#}
-    {##}
-    {#        {% if is_user_authenticated %}#}
-    {#        <a href="{% url "create_course" %}">#}
-    {#            <button class="btn btn-dark">Создать курс</button>#}
-    {#        </a>#}
-    {#        {% endif %}#}
-    {#        <script>#}
-    {#            let searchInput = $("#search-course");#}
-    {#            let coursesCatalog = $("#courses-catalog");#}
-    {#            searchInput.on("input", function () {#}
-    {#                let searchText = searchInput.val();#}
-    {##}
-    {#                $.ajax({#}
-    {#                    url: baseUrl + "courses/search_course",#}
-    {#                    type: "POST",#}
-    {#                    data: JSON.stringify({"search_text": searchText}),#}
-    {#                    success: function (data) {#}
-    {#                        let coursesList = data["courses"];#}
-    {#                        coursesCatalog.empty();#}
-    {#                        for (let i = 0; i < coursesList.length; ++i) {#}
-    {#                            addCourseToCatalog(coursesList[i]);#}
-    {#                        }#}
-    {#                    },#}
-    {#                    error: function () {#}
-    {#                        console.log("error while searching...");#}
-    {#                    }#}
-    {#                })#}
-    {#            });#}
-    {##}
-    {#            function addCourseToCatalog(course) {#}
-    {#                let itemWrapper = $("<div>", {#}
-    {#                    class: "col-lg-3 col-md-4 col-sm-6 portfolio-item"#}
-    {#                });#}
-    {#                let cardWrapper = $("<div>", {#}
-    {#                    class: "card h-100"#}
-    {#                });#}
-    {#                let courseLink = $("<a>", {#}
-    {#                    href: "/courses/get_course/" + course.id#}
-    {#                });#}
-    {#                let courseCover = $("<img>", {#}
-    {#                    class: "card-img-top",#}
-    {#                    src: course.cover#}
-    {#                });#}
-    {#                courseLink.append(courseCover);#}
-    {#                cardWrapper.append(courseLink);#}
-    {##}
-    {#                let bodyWrapper = $("<div>", {#}
-    {#                    class: "card-body"#}
-    {#                });#}
-    {#                let courseTitle = $("<h4>", {#}
-    {#                    class: "card-title",#}
-    {#                    text: course.title#}
-    {#                });#}
-    {#                let courseDescription = $("<p>", {#}
-    {#                    class: "card-text",#}
-    {#                    text: course.description#}
-    {#                })#}
-    {#                bodyWrapper.append(courseTitle);#}
-    {#                bodyWrapper.append(courseDescription);#}
-    {#                cardWrapper.append(bodyWrapper);#}
-    {##}
-    {#                itemWrapper.append(cardWrapper);#}
-    {##}
-    {#                coursesCatalog.append(itemWrapper);#}
-    {#            }#}
-    {#        </script>#}
-    {#    </div>#}
 {% endblock %}

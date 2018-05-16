@@ -8,10 +8,10 @@ config.ip = 'localhost'
 config.devtool = "#eval-source-map"
 
 config.entry = {
-  Main: [
+  CoursesCatalog: [
     'webpack-dev-server/client?http://' + config.ip + ':3000',
     'webpack/hot/only-dev-server',
-    './react/Main',
+    './react/CoursesCatalog',
   ],
 }
 
